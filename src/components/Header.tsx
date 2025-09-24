@@ -10,6 +10,7 @@ export const Header: React.FC = () => {
   const { disconnect } = useDisconnect()
   const { open } = useAppKit()
   const { totalTokens, purchases } = usePurchases()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const formatAddress = (addr: string) => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`
@@ -28,7 +29,34 @@ export const Header: React.FC = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
     }
+    setIsMobileMenuOpen(false) // Fermer le menu mobile après navigation
   }
+
+  // Fermer le menu mobile quand on clique en dehors
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      if (isMobileMenuOpen && !target.closest('.mobile-menu') && !target.closest('.hamburger-button')) {
+        setIsMobileMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [isMobileMenuOpen])
+
+  // Empêcher le scroll quand le menu mobile est ouvert
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMobileMenuOpen])
 
   return (
     <>
@@ -52,40 +80,40 @@ export const Header: React.FC = () => {
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="flex items-center space-x-4 lg:space-x-8">
-              <a 
-                href="#about" 
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group text-sm lg:text-base"
+            <nav className="hidden lg:flex items-center space-x-8">
+              <button 
+                onClick={() => handleNavClick('#about')}
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
               >
                 About
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
-              </a>
-              <a 
-                href="#tokenomics" 
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group text-sm lg:text-base"
+              </button>
+              <button 
+                onClick={() => handleNavClick('#tokenomics')}
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
               >
                 Tokenomics
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
-              </a>
-              <a 
-                href="#ico" 
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group text-sm lg:text-base"
+              </button>
+              <button 
+                onClick={() => handleNavClick('#ico')}
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
               >
                 ICO
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
-              </a>
-              <a 
-                href="#roadmap" 
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group text-sm lg:text-base"
+              </button>
+              <button 
+                onClick={() => handleNavClick('#roadmap')}
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
               >
                 Roadmap
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
-              </a>
+              </button>
               <a 
                 href="#" 
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group flex items-center space-x-1 text-sm lg:text-base"
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group flex items-center space-x-1"
               >
                 <span>Whitepaper</span>
                 <ExternalLink className="w-3 h-3" />
@@ -94,14 +122,14 @@ export const Header: React.FC = () => {
             </nav>
 
             {/* Desktop Wallet Section */}
-            <div className="flex items-center space-x-2 lg:space-x-4">
+            <div className="hidden lg:flex items-center space-x-4">
               {isConnected && address ? (
-                <div className="flex items-center space-x-1 lg:space-x-3">
+                <div className="flex items-center space-x-3">
                   {/* Token Balance */}
-                  <div className="bg-orange-50 border border-orange-200 rounded-lg px-2 lg:px-4 py-1 lg:py-2">
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-2">
                     <div className="flex items-center space-x-2">
                       <Coins className="w-4 h-4 text-orange-500" />
-                      <span className="text-xs lg:text-sm font-semibold text-orange-700">
+                      <span className="text-sm font-semibold text-orange-700">
                         {totalTokens.toLocaleString()} DEFLAT
                       </span>
                     </div>
@@ -110,11 +138,11 @@ export const Header: React.FC = () => {
                   {/* Wallet Address */}
                   <button
                     onClick={() => open({ view: 'Account' })}
-                    className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-2 lg:px-4 py-1 lg:py-2 transition-colors duration-200"
+                    className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-4 py-2 transition-colors duration-200"
                   >
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-xs lg:text-sm font-medium text-gray-700">
+                      <span className="text-sm font-medium text-gray-700">
                         {formatAddress(address)}
                       </span>
                     </div>
@@ -123,7 +151,7 @@ export const Header: React.FC = () => {
                   {/* Disconnect Button */}
                   <button
                     onClick={() => disconnect()}
-                    className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg px-2 lg:px-3 py-1 lg:py-2 transition-colors duration-200"
+                    className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg px-3 py-2 transition-colors duration-200"
                     title="Disconnect"
                   >
                     <LogOut className="w-4 h-4" />
@@ -132,11 +160,154 @@ export const Header: React.FC = () => {
               ) : (
                 <button
                   onClick={handleConnectWallet}
-                  className="bg-orange-500 hover:bg-orange-600 text-white px-3 lg:px-6 py-2 lg:py-2.5 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2 text-sm lg:text-base"
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2"
                 >
                   <Wallet className="w-4 h-4" />
-                  <span className="hidden sm:inline">Connect Wallet</span>
-                  <span className="sm:hidden">Connect</span>
+                  <span>Connect Wallet</span>
+                </button>
+              )}
+            </div>
+
+            {/* Mobile Menu Button & Wallet */}
+            <div className="flex lg:hidden items-center space-x-3">
+              {/* Mobile Wallet Info */}
+              {isConnected && address && (
+                <div className="bg-orange-50 border border-orange-200 rounded-lg px-2 py-1">
+                  <div className="flex items-center space-x-1">
+                    <Coins className="w-3 h-3 text-orange-500" />
+                    <span className="text-xs font-semibold text-orange-700">
+                      {totalTokens.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Hamburger Button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="hamburger-button p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+                aria-label="Toggle menu"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-6 h-6 text-gray-700" />
+                ) : (
+                  <Menu className="w-6 h-6 text-gray-700" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        <div className={`mobile-menu lg:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg transition-all duration-300 ease-in-out ${
+          isMobileMenuOpen 
+            ? 'opacity-100 visible transform translate-y-0' 
+            : 'opacity-0 invisible transform -translate-y-2'
+        }`}>
+          <div className="px-4 py-6 space-y-4">
+            {/* Navigation Links */}
+            <div className="space-y-3">
+              <button 
+                onClick={() => handleNavClick('#about')}
+                className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
+              >
+                About
+              </button>
+              <button 
+                onClick={() => handleNavClick('#tokenomics')}
+                className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
+              >
+                Tokenomics
+              </button>
+              <button 
+                onClick={() => handleNavClick('#ico')}
+                className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
+              >
+                ICO
+              </button>
+              <button 
+                onClick={() => handleNavClick('#roadmap')}
+                className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
+              >
+                Roadmap
+              </button>
+              <a 
+                href="#" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium flex items-center justify-between"
+              >
+                <span>Whitepaper</span>
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
+
+            {/* Mobile Wallet Section */}
+            <div className="border-t border-gray-200 pt-4 mt-6">
+              {isConnected && address ? (
+                <div className="space-y-3">
+                  {/* Stats */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-center">
+                      <div className="flex items-center justify-center space-x-1 mb-1">
+                        <Coins className="w-4 h-4 text-orange-500" />
+                        <span className="text-lg font-bold text-orange-600">
+                          {totalTokens.toLocaleString()}
+                        </span>
+                      </div>
+                      <p className="text-xs text-orange-700">DEFLAT Tokens</p>
+                    </div>
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                      <div className="flex items-center justify-center space-x-1 mb-1">
+                        <TrendingUp className="w-4 h-4 text-green-500" />
+                        <span className="text-lg font-bold text-green-600">
+                          ${totalInvested.toFixed(2)}
+                        </span>
+                      </div>
+                      <p className="text-xs text-green-700">Invested</p>
+                    </div>
+                  </div>
+
+                  {/* Wallet Actions */}
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => {
+                        open({ view: 'Account' })
+                        setIsMobileMenuOpen(false)
+                      }}
+                      className="w-full bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-4 py-3 transition-colors duration-200 flex items-center justify-between"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-sm font-medium text-gray-700">
+                          {formatAddress(address)}
+                        </span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        disconnect()
+                        setIsMobileMenuOpen(false)
+                      }}
+                      className="w-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg px-4 py-3 transition-colors duration-200 flex items-center justify-center space-x-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span className="font-medium">Disconnect</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    handleConnectWallet()
+                    setIsMobileMenuOpen(false)
+                  }}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg flex items-center justify-center space-x-2"
+                >
+                  <Wallet className="w-4 h-4" />
+                  <span>Connect Wallet</span>
                 </button>
               )}
             </div>
