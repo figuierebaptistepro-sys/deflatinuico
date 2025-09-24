@@ -28,7 +28,7 @@ export const Header: React.FC = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
     }
-    setIsMenuOpen(false) // Fermer le menu après navigation
+    setIsMenuOpen(false)
   }
 
   const toggleMenu = () => {
@@ -37,22 +37,21 @@ export const Header: React.FC = () => {
 
   return (
     <>
-      {/* Header Principal */}
-      <header className="relative z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
+          <div className="flex items-center justify-between h-16">
             
             {/* Logo */}
-            <div className="flex items-center space-x-3 flex-shrink-0">
-              <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-orange-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg lg:text-xl">D</span>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-lg">D</span>
               </div>
-              <div className="flex flex-col">
-                <span className="text-xl lg:text-2xl font-bold text-gray-900">
+              <div>
+                <span className="text-xl font-bold text-gray-900">
                   <span className="text-orange-500">DEFLAT</span>
                   <span className="text-blue-600">INU</span>
                 </span>
-                <span className="text-xs text-gray-500 hidden sm:block">Deflationary Token</span>
               </div>
             </div>
 
@@ -60,45 +59,40 @@ export const Header: React.FC = () => {
             <nav className="hidden lg:flex items-center space-x-8">
               <button 
                 onClick={() => scrollToSection('#about')}
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200"
               >
                 About
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
               </button>
               <button 
                 onClick={() => scrollToSection('#tokenomics')}
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200"
               >
                 Tokenomics
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
               </button>
               <button 
                 onClick={() => scrollToSection('#ico')}
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200"
               >
                 ICO
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
               </button>
               <button 
                 onClick={() => scrollToSection('#roadmap')}
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200"
               >
                 Roadmap
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
               </button>
               <a 
                 href="#" 
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group flex items-center space-x-1"
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 flex items-center space-x-1"
               >
                 <span>Whitepaper</span>
                 <ExternalLink className="w-3 h-3" />
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
               </a>
             </nav>
 
-            {/* Section Wallet Desktop */}
+            {/* Wallet Section Desktop */}
             <div className="hidden lg:flex items-center space-x-4">
               {isConnected && address ? (
                 <div className="flex items-center space-x-3">
@@ -112,7 +106,7 @@ export const Header: React.FC = () => {
                     </div>
                   </div>
                   
-                  {/* Adresse Wallet */}
+                  {/* Wallet Address */}
                   <button
                     onClick={() => open({ view: 'Account' })}
                     className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-4 py-2 transition-colors duration-200"
@@ -125,7 +119,7 @@ export const Header: React.FC = () => {
                     </div>
                   </button>
                   
-                  {/* Bouton Déconnexion */}
+                  {/* Disconnect Button */}
                   <button
                     onClick={() => disconnect()}
                     className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg px-3 py-2 transition-colors duration-200"
@@ -145,11 +139,11 @@ export const Header: React.FC = () => {
               )}
             </div>
 
-            {/* Bouton Menu Mobile */}
+            {/* Menu Hamburger */}
             <div className="lg:hidden">
               <button
                 onClick={toggleMenu}
-                className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
                 aria-label="Toggle menu"
               >
                 {isMenuOpen ? (
@@ -164,10 +158,10 @@ export const Header: React.FC = () => {
 
         {/* Menu Mobile */}
         {isMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-xl z-40">
+          <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg">
             <div className="px-4 py-6 space-y-6">
               
-              {/* Navigation Links */}
+              {/* Navigation Mobile */}
               <div className="space-y-1">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Navigation</h3>
                 <button 
@@ -206,7 +200,7 @@ export const Header: React.FC = () => {
                 </a>
               </div>
 
-              {/* Section Wallet Mobile */}
+              {/* Wallet Section Mobile */}
               <div className="border-t border-gray-200 pt-6">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Wallet</h3>
                 
@@ -234,7 +228,7 @@ export const Header: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Actions Wallet */}
+                    {/* Wallet Actions */}
                     <div className="space-y-2">
                       <button
                         onClick={() => {
