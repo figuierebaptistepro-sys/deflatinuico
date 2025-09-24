@@ -40,37 +40,33 @@ export const Header: React.FC = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element
-      if (isMobileMenuOpen && !target.closest('.mobile-menu') && !target.closest('.hamburger-button')) {
+      if (isMobileMenuOpen && !target.closest('.mobile-menu-container')) {
         setIsMobileMenuOpen(false)
       }
     }
 
-    document.addEventListener('click', handleClickOutside)
-    return () => document.removeEventListener('click', handleClickOutside)
-  }, [isMobileMenuOpen])
-
-  // Empêcher le scroll quand le menu mobile est ouvert
-  useEffect(() => {
     if (isMobileMenuOpen) {
+      document.addEventListener('click', handleClickOutside)
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = 'unset'
     }
 
     return () => {
+      document.removeEventListener('click', handleClickOutside)
       document.body.style.overflow = 'unset'
     }
   }, [isMobileMenuOpen])
 
   return (
     <>
-      {/* Main Header */}
+      {/* Header Principal */}
       <header className="relative z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
             
             {/* Logo */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 flex-shrink-0">
               <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-orange-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-lg lg:text-xl">D</span>
               </div>
@@ -83,7 +79,7 @@ export const Header: React.FC = () => {
               </div>
             </div>
 
-            {/* Desktop Navigation */}
+            {/* Navigation Desktop */}
             <nav className="hidden lg:flex items-center space-x-8">
               <button 
                 onClick={() => handleNavClick('#about')}
@@ -125,11 +121,11 @@ export const Header: React.FC = () => {
               </a>
             </nav>
 
-            {/* Desktop Wallet Section */}
+            {/* Section Wallet Desktop */}
             <div className="hidden lg:flex items-center space-x-4">
               {isConnected && address ? (
                 <div className="flex items-center space-x-3">
-                  {/* Token Balance */}
+                  {/* Balance Tokens */}
                   <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-2">
                     <div className="flex items-center space-x-2">
                       <Coins className="w-4 h-4 text-orange-500" />
@@ -139,7 +135,7 @@ export const Header: React.FC = () => {
                     </div>
                   </div>
                   
-                  {/* Wallet Address */}
+                  {/* Adresse Wallet */}
                   <button
                     onClick={() => open({ view: 'Account' })}
                     className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-4 py-2 transition-colors duration-200"
@@ -152,7 +148,7 @@ export const Header: React.FC = () => {
                     </div>
                   </button>
                   
-                  {/* Disconnect Button */}
+                  {/* Bouton Déconnexion */}
                   <button
                     onClick={() => disconnect()}
                     className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg px-3 py-2 transition-colors duration-200"
@@ -172,9 +168,9 @@ export const Header: React.FC = () => {
               )}
             </div>
 
-            {/* Mobile Menu Button & Wallet */}
+            {/* Section Mobile - Balance + Hamburger */}
             <div className="flex lg:hidden items-center space-x-3">
-              {/* Mobile Wallet Info */}
+              {/* Balance Mobile (si connecté) */}
               {isConnected && address && (
                 <div className="bg-orange-50 border border-orange-200 rounded-lg px-2 py-1">
                   <div className="flex items-center space-x-1">
@@ -186,138 +182,154 @@ export const Header: React.FC = () => {
                 </div>
               )}
 
-              {/* Hamburger Button */}
-              <button
-                onClick={toggleMobileMenu}
-                className="hamburger-button p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
-                aria-label="Toggle menu"
-              >
-                {isMobileMenuOpen ? (
-                  <X className="w-6 h-6 text-gray-700" />
-                ) : (
-                  <Menu className="w-6 h-6 text-gray-700" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        <div className={`mobile-menu lg:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg transition-all duration-300 ease-in-out ${
-          isMobileMenuOpen 
-            ? 'opacity-100 visible transform translate-y-0' 
-            : 'opacity-0 invisible transform -translate-y-2'
-        }`}>
-          <div className="px-4 py-6 space-y-4">
-            {/* Navigation Links */}
-            <div className="space-y-3">
-              <button 
-                onClick={() => handleNavClick('#about')}
-                className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
-              >
-                About
-              </button>
-              <button 
-                onClick={() => handleNavClick('#tokenomics')}
-                className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
-              >
-                Tokenomics
-              </button>
-              <button 
-                onClick={() => handleNavClick('#ico')}
-                className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
-              >
-                ICO
-              </button>
-              <button 
-                onClick={() => handleNavClick('#roadmap')}
-                className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
-              >
-                Roadmap
-              </button>
-              <a 
-                href="#" 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium flex items-center justify-between"
-              >
-                <span>Whitepaper</span>
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </div>
-
-            {/* Mobile Wallet Section */}
-            <div className="border-t border-gray-200 pt-4 mt-6">
-              {isConnected && address ? (
-                <div className="space-y-3">
-                  {/* Stats */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-center">
-                      <div className="flex items-center justify-center space-x-1 mb-1">
-                        <Coins className="w-4 h-4 text-orange-500" />
-                        <span className="text-lg font-bold text-orange-600">
-                          {totalTokens.toLocaleString()}
-                        </span>
-                      </div>
-                      <p className="text-xs text-orange-700">DEFLAT Tokens</p>
-                    </div>
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
-                      <div className="flex items-center justify-center space-x-1 mb-1">
-                        <TrendingUp className="w-4 h-4 text-green-500" />
-                        <span className="text-lg font-bold text-green-600">
-                          ${totalInvested.toFixed(2)}
-                        </span>
-                      </div>
-                      <p className="text-xs text-green-700">Invested</p>
-                    </div>
-                  </div>
-
-                  {/* Wallet Actions */}
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => {
-                        open({ view: 'Account' })
-                        toggleMobileMenu()
-                      }}
-                      className="w-full bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-4 py-3 transition-colors duration-200 flex items-center justify-between"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-sm font-medium text-gray-700">
-                          {formatAddress(address)}
-                        </span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
-                    </button>
-                    
-                    <button
-                      onClick={() => {
-                        disconnect()
-                        toggleMobileMenu()
-                      }}
-                      className="w-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg px-4 py-3 transition-colors duration-200 flex items-center justify-center space-x-2"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      <span className="font-medium">Disconnect</span>
-                    </button>
-                  </div>
-                </div>
-              ) : (
+              {/* Bouton Hamburger */}
+              <div className="mobile-menu-container">
                 <button
-                  onClick={() => {
-                    handleConnectWallet()
-                    toggleMobileMenu()
-                  }}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg flex items-center justify-center space-x-2"
+                  type="button"
+                  onClick={toggleMobileMenu}
+                  className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  aria-label="Toggle menu"
+                  aria-expanded={isMobileMenuOpen}
                 >
-                  <Wallet className="w-4 h-4" />
-                  <span>Connect Wallet</span>
+                  {isMobileMenuOpen ? (
+                    <X className="w-6 h-6 text-gray-700" />
+                  ) : (
+                    <Menu className="w-6 h-6 text-gray-700" />
+                  )}
                 </button>
-              )}
+              </div>
             </div>
           </div>
         </div>
       </header>
+
+      {/* Menu Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+            onClick={() => setIsMobileMenuOpen(false)}
+          ></div>
+          
+          {/* Menu Panel */}
+          <div className="mobile-menu-container fixed top-16 left-0 right-0 bg-white border-b border-gray-200 shadow-xl max-h-screen overflow-y-auto">
+            <div className="px-4 py-6 space-y-6">
+              
+              {/* Navigation Links */}
+              <div className="space-y-1">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Navigation</h3>
+                <button 
+                  onClick={() => handleNavClick('#about')}
+                  className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
+                >
+                  About
+                </button>
+                <button 
+                  onClick={() => handleNavClick('#tokenomics')}
+                  className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
+                >
+                  Tokenomics
+                </button>
+                <button 
+                  onClick={() => handleNavClick('#ico')}
+                  className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
+                >
+                  ICO
+                </button>
+                <button 
+                  onClick={() => handleNavClick('#roadmap')}
+                  className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
+                >
+                  Roadmap
+                </button>
+                <a 
+                  href="#" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium flex items-center justify-between"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <span>Whitepaper</span>
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+
+              {/* Section Wallet Mobile */}
+              <div className="border-t border-gray-200 pt-6">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Wallet</h3>
+                
+                {isConnected && address ? (
+                  <div className="space-y-4">
+                    {/* Stats */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-center">
+                        <div className="flex items-center justify-center space-x-1 mb-1">
+                          <Coins className="w-4 h-4 text-orange-500" />
+                          <span className="text-lg font-bold text-orange-600">
+                            {totalTokens.toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-xs text-orange-700">DEFLAT Tokens</p>
+                      </div>
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                        <div className="flex items-center justify-center space-x-1 mb-1">
+                          <TrendingUp className="w-4 h-4 text-green-500" />
+                          <span className="text-lg font-bold text-green-600">
+                            ${totalInvested.toFixed(2)}
+                          </span>
+                        </div>
+                        <p className="text-xs text-green-700">Invested</p>
+                      </div>
+                    </div>
+
+                    {/* Actions Wallet */}
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => {
+                          open({ view: 'Account' })
+                          setIsMobileMenuOpen(false)
+                        }}
+                        className="w-full bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-4 py-3 transition-colors duration-200 flex items-center justify-between"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span className="text-sm font-medium text-gray-700">
+                            {formatAddress(address)}
+                          </span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                      </button>
+                      
+                      <button
+                        onClick={() => {
+                          disconnect()
+                          setIsMobileMenuOpen(false)
+                        }}
+                        className="w-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg px-4 py-3 transition-colors duration-200 flex items-center justify-center space-x-2"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span className="font-medium">Disconnect</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      handleConnectWallet()
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg flex items-center justify-center space-x-2"
+                  >
+                    <Wallet className="w-4 h-4" />
+                    <span>Connect Wallet</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-gray-50 via-white to-orange-50 overflow-hidden">
@@ -377,7 +389,7 @@ export const Header: React.FC = () => {
               </button>
             </div>
 
-            {/* User Stats (if connected) */}
+            {/* User Stats (si connecté) */}
             {isConnected && address && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
                 <div className="bg-white/90 backdrop-blur-sm rounded-xl p-6 border border-orange-200 shadow-lg">
