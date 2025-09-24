@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 import { useAppKit } from '@reown/appkit/react'
 import { Menu, X, Wallet, LogOut, Coins, TrendingUp, ExternalLink, ChevronRight } from 'lucide-react'
@@ -24,13 +24,17 @@ export const Header: React.FC = () => {
     open()
   }
 
-  const handleNavClick = (href: string) => {
+  const handleNavClick = useCallback((href: string) => {
     const element = document.querySelector(href)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
     }
-    setIsMobileMenuOpen(false) // Fermer le menu mobile après navigation
-  }
+    setIsMobileMenuOpen(false)
+  }, [])
+
+  const toggleMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(prev => !prev)
+  }, [])
 
   // Fermer le menu mobile quand on clique en dehors
   useEffect(() => {
@@ -184,7 +188,7 @@ export const Header: React.FC = () => {
 
               {/* Hamburger Button */}
               <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                onClick={toggleMobileMenu}
                 className="hamburger-button p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
                 aria-label="Toggle menu"
               >
@@ -273,7 +277,7 @@ export const Header: React.FC = () => {
                     <button
                       onClick={() => {
                         open({ view: 'Account' })
-                        setIsMobileMenuOpen(false)
+                        toggleMobileMenu()
                       }}
                       className="w-full bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-4 py-3 transition-colors duration-200 flex items-center justify-between"
                     >
@@ -289,7 +293,7 @@ export const Header: React.FC = () => {
                     <button
                       onClick={() => {
                         disconnect()
-                        setIsMobileMenuOpen(false)
+                        toggleMobileMenu()
                       }}
                       className="w-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg px-4 py-3 transition-colors duration-200 flex items-center justify-center space-x-2"
                     >
@@ -302,7 +306,7 @@ export const Header: React.FC = () => {
                 <button
                   onClick={() => {
                     handleConnectWallet()
-                    setIsMobileMenuOpen(false)
+                    toggleMobileMenu()
                   }}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg flex items-center justify-center space-x-2"
                 >
