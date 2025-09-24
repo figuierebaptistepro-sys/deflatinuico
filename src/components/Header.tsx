@@ -1,8 +1,7 @@
-import React from 'react'
-import { useState, useEffect, useCallback } from 'react'
+import React, { useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 import { useAppKit } from '@reown/appkit/react'
-import { Menu, X, Wallet, LogOut, Coins, TrendingUp, ExternalLink, ChevronRight } from 'lucide-react'
+import { Menu, X, Wallet, LogOut, Coins, TrendingUp, ExternalLink } from 'lucide-react'
 import { usePurchases } from '../hooks/usePurchases'
 
 export const Header: React.FC = () => {
@@ -10,7 +9,7 @@ export const Header: React.FC = () => {
   const { disconnect } = useDisconnect()
   const { open } = useAppKit()
   const { totalTokens, purchases } = usePurchases()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const formatAddress = (addr: string) => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`
@@ -24,39 +23,17 @@ export const Header: React.FC = () => {
     open()
   }
 
-  const handleNavClick = useCallback((href: string) => {
-    const element = document.querySelector(href)
+  const scrollToSection = (sectionId: string) => {
+    const element = document.querySelector(sectionId)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
     }
-    setIsMobileMenuOpen(false)
-  }, [])
+    setIsMenuOpen(false) // Fermer le menu après navigation
+  }
 
-  const toggleMobileMenu = useCallback(() => {
-    setIsMobileMenuOpen(prev => !prev)
-  }, [])
-
-  // Fermer le menu mobile quand on clique en dehors
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element
-      if (isMobileMenuOpen && !target.closest('.mobile-menu-container')) {
-        setIsMobileMenuOpen(false)
-      }
-    }
-
-    if (isMobileMenuOpen) {
-      document.addEventListener('click', handleClickOutside)
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside)
-      document.body.style.overflow = 'unset'
-    }
-  }, [isMobileMenuOpen])
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen)
+  }
 
   return (
     <>
@@ -82,28 +59,28 @@ export const Header: React.FC = () => {
             {/* Navigation Desktop */}
             <nav className="hidden lg:flex items-center space-x-8">
               <button 
-                onClick={() => handleNavClick('#about')}
+                onClick={() => scrollToSection('#about')}
                 className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
               >
                 About
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
               </button>
               <button 
-                onClick={() => handleNavClick('#tokenomics')}
+                onClick={() => scrollToSection('#tokenomics')}
                 className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
               >
                 Tokenomics
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
               </button>
               <button 
-                onClick={() => handleNavClick('#ico')}
+                onClick={() => scrollToSection('#ico')}
                 className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
               >
                 ICO
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
               </button>
               <button 
-                onClick={() => handleNavClick('#roadmap')}
+                onClick={() => scrollToSection('#roadmap')}
                 className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
               >
                 Roadmap
@@ -168,77 +145,51 @@ export const Header: React.FC = () => {
               )}
             </div>
 
-            {/* Section Mobile - Balance + Hamburger */}
-            <div className="flex lg:hidden items-center space-x-3">
-              {/* Balance Mobile (si connecté) */}
-              {isConnected && address && (
-                <div className="bg-orange-50 border border-orange-200 rounded-lg px-2 py-1">
-                  <div className="flex items-center space-x-1">
-                    <Coins className="w-3 h-3 text-orange-500" />
-                    <span className="text-xs font-semibold text-orange-700">
-                      {totalTokens.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Bouton Hamburger */}
-              <div className="mobile-menu-container">
-                <button
-                  type="button"
-                  onClick={toggleMobileMenu}
-                  className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  aria-label="Toggle menu"
-                  aria-expanded={isMobileMenuOpen}
-                >
-                  {isMobileMenuOpen ? (
-                    <X className="w-6 h-6 text-gray-700" />
-                  ) : (
-                    <Menu className="w-6 h-6 text-gray-700" />
-                  )}
-                </button>
-              </div>
+            {/* Bouton Menu Mobile */}
+            <div className="lg:hidden">
+              <button
+                onClick={toggleMenu}
+                className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                aria-label="Toggle menu"
+              >
+                {isMenuOpen ? (
+                  <X className="w-6 h-6 text-gray-700" />
+                ) : (
+                  <Menu className="w-6 h-6 text-gray-700" />
+                )}
+              </button>
             </div>
           </div>
         </div>
-      </header>
 
-      {/* Menu Mobile Overlay */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden">
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-            onClick={() => setIsMobileMenuOpen(false)}
-          ></div>
-          
-          {/* Menu Panel */}
-          <div className="mobile-menu-container fixed top-16 left-0 right-0 bg-white border-b border-gray-200 shadow-xl max-h-screen overflow-y-auto">
+        {/* Menu Mobile */}
+        {isMenuOpen && (
+          <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-xl z-40">
             <div className="px-4 py-6 space-y-6">
               
               {/* Navigation Links */}
               <div className="space-y-1">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Navigation</h3>
                 <button 
-                  onClick={() => handleNavClick('#about')}
+                  onClick={() => scrollToSection('#about')}
                   className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
                 >
                   About
                 </button>
                 <button 
-                  onClick={() => handleNavClick('#tokenomics')}
+                  onClick={() => scrollToSection('#tokenomics')}
                   className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
                 >
                   Tokenomics
                 </button>
                 <button 
-                  onClick={() => handleNavClick('#ico')}
+                  onClick={() => scrollToSection('#ico')}
                   className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
                 >
                   ICO
                 </button>
                 <button 
-                  onClick={() => handleNavClick('#roadmap')}
+                  onClick={() => scrollToSection('#roadmap')}
                   className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium"
                 >
                   Roadmap
@@ -248,7 +199,7 @@ export const Header: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium flex items-center justify-between"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   <span>Whitepaper</span>
                   <ExternalLink className="w-4 h-4" />
@@ -288,7 +239,7 @@ export const Header: React.FC = () => {
                       <button
                         onClick={() => {
                           open({ view: 'Account' })
-                          setIsMobileMenuOpen(false)
+                          setIsMenuOpen(false)
                         }}
                         className="w-full bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-4 py-3 transition-colors duration-200 flex items-center justify-between"
                       >
@@ -298,13 +249,12 @@ export const Header: React.FC = () => {
                             {formatAddress(address)}
                           </span>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-gray-400" />
                       </button>
                       
                       <button
                         onClick={() => {
                           disconnect()
-                          setIsMobileMenuOpen(false)
+                          setIsMenuOpen(false)
                         }}
                         className="w-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg px-4 py-3 transition-colors duration-200 flex items-center justify-center space-x-2"
                       >
@@ -317,7 +267,7 @@ export const Header: React.FC = () => {
                   <button
                     onClick={() => {
                       handleConnectWallet()
-                      setIsMobileMenuOpen(false)
+                      setIsMenuOpen(false)
                     }}
                     className="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg flex items-center justify-center space-x-2"
                   >
@@ -328,8 +278,8 @@ export const Header: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </header>
 
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-gray-50 via-white to-orange-50 overflow-hidden">
@@ -376,7 +326,7 @@ export const Header: React.FC = () => {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
               <button 
-                onClick={() => handleNavClick('#ico')}
+                onClick={() => scrollToSection('#ico')}
                 className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 Join the ICO →
