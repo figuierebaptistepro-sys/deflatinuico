@@ -3,12 +3,16 @@ import { useAccount, useDisconnect } from 'wagmi'
 import { useAppKit } from '@reown/appkit/react'
 import { Menu, X, Wallet, LogOut, TrendingUp, ExternalLink, Coins } from 'lucide-react'
 import { usePurchases } from '../hooks/usePurchases'
+import { useICORounds } from '../hooks/useICORounds'
+import { useICOStatus } from '../hooks/useICOStatus'
 
 export const Header: React.FC = () => {
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
   const { open } = useAppKit()
   const { totalTokens, purchases } = usePurchases()
+  const { activeRound } = useICORounds()
+  const { status: icoStatus } = useICOStatus()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const formatAddress = (addr: string) => {
@@ -293,10 +297,22 @@ export const Header: React.FC = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
           <div className="text-center">
             {/* ICO Live Badge */}
-            <div className="inline-flex items-center space-x-2 bg-orange-100 text-orange-700 px-4 py-2 rounded-full mb-8 border border-orange-200">
-              <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-              <span className="font-semibold text-sm">ICO Round 1 is Live!</span>
-            </div>
+            {icoStatus?.ico_finished ? (
+              <div className="inline-flex items-center space-x-2 bg-green-100 text-green-700 px-4 py-2 rounded-full mb-8 border border-green-200">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="font-semibold text-sm">ICO Terminé avec Succès!</span>
+              </div>
+            ) : activeRound ? (
+              <div className="inline-flex items-center space-x-2 bg-orange-100 text-orange-700 px-4 py-2 rounded-full mb-8 border border-orange-200">
+                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                <span className="font-semibold text-sm">ICO Round {activeRound.round_number} is Live!</span>
+              </div>
+            ) : (
+              <div className="inline-flex items-center space-x-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-full mb-8 border border-gray-200">
+                <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                <span className="font-semibold text-sm">ICO Coming Soon...</span>
+              </div>
+            )}
 
             {/* Main Heading */}
             <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-6 leading-tight">
