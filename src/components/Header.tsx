@@ -9,7 +9,6 @@ export const Header: React.FC = () => {
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
   const { open } = useAppKit()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { totalTokens, purchases } = usePurchases()
 
   const formatAddress = (addr: string) => {
@@ -24,40 +23,12 @@ export const Header: React.FC = () => {
     open()
   }
 
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false)
-  }
-
   const handleNavClick = (href: string) => {
-    closeMobileMenu()
     const element = document.querySelector(href)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
     }
   }
-
-  // Prevent body scroll when menu is open
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
-    return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [isMobileMenuOpen])
-
-  // Close menu on resize to desktop
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setIsMobileMenuOpen(false)
-      }
-    }
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
 
   return (
     <>
@@ -81,31 +52,31 @@ export const Header: React.FC = () => {
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-8">
+            <nav className="flex items-center space-x-4 lg:space-x-8">
               <a 
                 href="#about" 
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group text-sm lg:text-base"
               >
                 About
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
               </a>
               <a 
                 href="#tokenomics" 
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group text-sm lg:text-base"
               >
                 Tokenomics
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
               </a>
               <a 
                 href="#ico" 
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group text-sm lg:text-base"
               >
                 ICO
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
               </a>
               <a 
                 href="#roadmap" 
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group text-sm lg:text-base"
               >
                 Roadmap
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
@@ -114,7 +85,7 @@ export const Header: React.FC = () => {
                 href="#" 
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group flex items-center space-x-1"
+                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group flex items-center space-x-1 text-sm lg:text-base"
               >
                 <span>Whitepaper</span>
                 <ExternalLink className="w-3 h-3" />
@@ -123,14 +94,14 @@ export const Header: React.FC = () => {
             </nav>
 
             {/* Desktop Wallet Section */}
-            <div className="hidden lg:flex items-center space-x-4">
+            <div className="flex items-center space-x-2 lg:space-x-4">
               {isConnected && address ? (
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-1 lg:space-x-3">
                   {/* Token Balance */}
-                  <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-2">
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg px-2 lg:px-4 py-1 lg:py-2">
                     <div className="flex items-center space-x-2">
                       <Coins className="w-4 h-4 text-orange-500" />
-                      <span className="text-sm font-semibold text-orange-700">
+                      <span className="text-xs lg:text-sm font-semibold text-orange-700">
                         {totalTokens.toLocaleString()} DEFLAT
                       </span>
                     </div>
@@ -139,11 +110,11 @@ export const Header: React.FC = () => {
                   {/* Wallet Address */}
                   <button
                     onClick={() => open({ view: 'Account' })}
-                    className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-4 py-2 transition-colors duration-200"
+                    className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-2 lg:px-4 py-1 lg:py-2 transition-colors duration-200"
                   >
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">
+                      <span className="text-xs lg:text-sm font-medium text-gray-700">
                         {formatAddress(address)}
                       </span>
                     </div>
@@ -152,7 +123,7 @@ export const Header: React.FC = () => {
                   {/* Disconnect Button */}
                   <button
                     onClick={() => disconnect()}
-                    className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg px-3 py-2 transition-colors duration-200"
+                    className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg px-2 lg:px-3 py-1 lg:py-2 transition-colors duration-200"
                     title="Disconnect"
                   >
                     <LogOut className="w-4 h-4" />
@@ -161,34 +132,14 @@ export const Header: React.FC = () => {
               ) : (
                 <button
                   onClick={handleConnectWallet}
-                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-3 lg:px-6 py-2 lg:py-2.5 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2 text-sm lg:text-base"
                 >
                   <Wallet className="w-4 h-4" />
-                  <span>Connect Wallet</span>
+                  <span className="hidden sm:inline">Connect Wallet</span>
+                  <span className="sm:hidden">Connect</span>
                 </button>
               )}
             </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              onClick={() => {
-                const icoSection = document.querySelector('#ico')
-                if (icoSection) {
-                  icoSection.scrollIntoView({ behavior: 'smooth' })
-                  // Focus on purchase form after scroll
-                  setTimeout(() => {
-                    const purchaseForm = icoSection.querySelector('input[type="number"]')
-                    if (purchaseForm) {
-                      purchaseForm.focus()
-                    }
-                  }, 1000)
-                }
-              }}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-            >
-              <Menu className="w-6 h-6 text-gray-700" />
-            </button>
           </div>
         </div>
       </header>
@@ -288,178 +239,6 @@ export const Header: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Mobile Menu Modal */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-[9999] lg:hidden">
-          {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={closeMobileMenu}
-          />
-          
-          {/* Modal */}
-          <div className="absolute right-0 top-0 h-full w-80 max-w-[90vw] bg-white shadow-2xl">
-            <div className="flex flex-col h-full">
-              
-              {/* Modal Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                <div></div>
-                <button
-                  onClick={closeMobileMenu}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5 text-gray-500" />
-                </button>
-              </div>
-
-              {/* Navigation Links */}
-              {/* Content */}
-              <div className="flex-1 p-6">
-                {/* Navigation Links */}
-                <nav className="space-y-1 mb-8">
-                  <button
-                    onClick={() => handleNavClick('#about')}
-                    className="w-full flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg transition-colors group"
-                  >
-                    <span className="font-medium">About</span>
-                    <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('#ico')}
-                    className="w-full flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg transition-colors group"
-                  >
-                    <span className="font-medium">ICO</span>
-                    <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('#tokenomics')}
-                    className="w-full flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg transition-colors group"
-                  >
-                    <span className="font-medium">Tokenomics</span>
-                    <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('#roadmap')}
-                    className="w-full flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg transition-colors group"
-                  >
-                    <span className="font-medium">Roadmap</span>
-                    <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </button>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      closeMobileMenu()
-                      // Ouvrir le whitepaper dans un nouvel onglet
-                      window.open('#', '_blank')
-                    }}
-                    className="w-full flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg transition-colors group"
-                  >
-                    <span className="font-medium">Whitepaper</span>
-                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </a>
-                </nav>
-
-                {/* Wallet Info (if connected) */}
-                {isConnected && address && (
-                  <div className="mt-8 space-y-4">
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <h3 className="font-semibold text-gray-900 mb-3">Your Wallet</h3>
-                      
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">DEFLAT Tokens</span>
-                          <span className="font-semibold text-orange-600">
-                            {totalTokens.toLocaleString()}
-                          </span>
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Total Invested</span>
-                          <span className="font-semibold text-green-600">
-                            ${totalInvested.toFixed(2)}
-                          </span>
-                        </div>
-                        
-                        <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                          <span className="text-sm text-gray-600">Address</span>
-                          <button
-                            onClick={() => {
-                              open({ view: 'Account' })
-                              closeMobileMenu()
-                            }}
-                            className="text-sm font-mono text-blue-600 hover:text-blue-700"
-                          >
-                            {formatAddress(address)}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Recent Transactions */}
-                    {purchases.length > 0 && (
-                      <div className="bg-gray-50 rounded-lg p-4">
-                        <h4 className="font-medium text-gray-900 mb-3">Recent Transactions</h4>
-                        <div className="space-y-2">
-                          {purchases.slice(0, 3).map((purchase) => (
-                            <div key={purchase.id} className="flex items-center justify-between text-sm">
-                              <div className="flex items-center space-x-2">
-                                <div className={`w-2 h-2 rounded-full ${
-                                  purchase.status === 'verified' ? 'bg-green-500' : 
-                                  purchase.status === 'pending' ? 'bg-yellow-500' : 'bg-red-500'
-                                }`} />
-                                <span className="text-gray-600">
-                                  {purchase.tokens_purchased.toLocaleString()} DEFLAT
-                                </span>
-                              </div>
-                              <a
-                                href={`https://sepolia.etherscan.io/tx/${purchase.tx_hash}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:text-blue-700"
-                              >
-                                <ExternalLink className="w-3 h-3" />
-                              </a>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Modal Footer */}
-              <div className="p-6 border-t border-gray-200">
-                {isConnected && address ? (
-                  <button
-                    onClick={() => {
-                      disconnect()
-                      closeMobileMenu()
-                    }}
-                    className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>Disconnect Wallet</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      handleConnectWallet()
-                      closeMobileMenu()
-                    }}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2"
-                  >
-                    <Wallet className="w-4 h-4" />
-                    <span>Connect Wallet</span>
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   )
 }
