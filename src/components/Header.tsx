@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 import { useAppKit } from '@reown/appkit/react'
-import { Menu, X, Wallet, LogOut, Coins, TrendingUp, ExternalLink } from 'lucide-react'
+import { Menu, X, Wallet, LogOut, TrendingUp, ExternalLink, Coins } from 'lucide-react'
 import { usePurchases } from '../hooks/usePurchases'
 
 export const Header: React.FC = () => {
@@ -45,7 +45,7 @@ export const Header: React.FC = () => {
             {/* Logo */}
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg">D</span>
+                <Coins className="w-6 h-6 text-white" />
               </div>
               <div>
                 <span className="text-xl font-bold text-gray-900">
