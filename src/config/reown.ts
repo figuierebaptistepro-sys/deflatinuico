@@ -39,6 +39,29 @@ Object.keys(import.meta.env).forEach(key => {
 // Get Reown Project ID from environment variables
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
+// Get base URL with intelligent fallback
+const getBaseUrl = (): string => {
+  // 1. Try environment variable first (for custom domains)
+  const envBaseUrl = import.meta.env.VITE_PUBLIC_BASE_URL
+  if (envBaseUrl) {
+    console.log('✅ Using custom base URL from environment:', envBaseUrl)
+    return envBaseUrl
+  }
+  
+  // 2. Use current domain if available (works for bolt.host and any other domain)
+  if (typeof window !== 'undefined') {
+    console.log('✅ Using current domain:', window.location.origin)
+    return window.location.origin
+  }
+  
+  // 3. Fallback to bolt.host URL (for build time or server-side rendering)
+  const fallbackUrl = 'https://deflat-inu-ico-platf-zcjz.bolt.host'
+  console.log('⚠️ Using fallback URL:', fallbackUrl)
+  return fallbackUrl
+}
+
+const baseUrl = getBaseUrl()
+
 if (!projectId) {
   console.error('❌ ERREUR: VITE_WALLETCONNECT_PROJECT_ID manquant')
   throw new Error('VITE_WALLETCONNECT_PROJECT_ID is required. Please add it to your .env file.')
@@ -48,8 +71,8 @@ if (!projectId) {
 const metadata = {
   name: 'DEFLAT INU ICO',
   description: 'Deflationary Token ICO Platform',
-  url: typeof window !== 'undefined' ? window.location.origin : 'https://deflat-inu-ico-platf-zcjz.bolt.host',
-  icons: [typeof window !== 'undefined' ? `${window.location.origin}/vite.svg` : 'https://deflat-inu-ico-platf-zcjz.bolt.host/vite.svg']
+  url: baseUrl,
+  icons: [`${baseUrl}/vite.svg`]
 }
 
 // Supported networks
