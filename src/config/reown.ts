@@ -55,7 +55,7 @@ const getBaseUrl = (): string => {
   }
   
   // 3. Fallback to bolt.host URL (for build time or server-side rendering)
-  const fallbackUrl = 'https://deflat-inu-ico-platf-zcjz.bolt.host'
+  const fallbackUrl = 'https://deflatinu.com'
   console.log('⚠️ Using fallback URL:', fallbackUrl)
   return fallbackUrl
 }
