@@ -288,7 +288,7 @@ export const ICORounds: React.FC = () => {
                     <div>
                       <h4 className="text-xl md:text-2xl font-bold text-gray-900">Round {round.round_number}</h4>
                       <p className={`text-sm md:text-base font-medium ${getStatusColor(round.status)}`}>
-                        {round.status === 'active' ? 'Live Now' : 
+                        {round.status === 'active' ? 'Active' : 
                          round.status === 'completed' ? 'Completed' : 
                          round.status === 'upcoming' ? 'Coming Soon' : round.status}
                       </p>
@@ -356,7 +356,7 @@ export const ICORounds: React.FC = () => {
                       ? 'bg-green-100 text-green-800' 
                       : 'bg-gray-100 text-gray-800'
                   }`}>
-                    {selectedRound.status === 'active' ? 'Live' : 'Upcoming'}
+                    {selectedRound.status === 'active' ? 'Active' : 'Coming Soon'}
                   </span>
                 </div>
                 
