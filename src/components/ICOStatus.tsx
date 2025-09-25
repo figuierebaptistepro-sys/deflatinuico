@@ -63,15 +63,6 @@ export const ICOStatus: React.FC = () => {
             </>
           )}
         </h3>
-        
-        {!status.ico_finished && status.active_rounds === 0 && (
-          <button
-            onClick={handleFinishICO}
-            className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
-          >
-            Terminer l'ICO
-          </button>
-        )}
       </div>
 
       {/* Status Banner */}
