@@ -132,7 +132,11 @@ export const usePurchases = () => {
         ? 'https://api.etherscan.io/api'
         : 'https://api-sepolia.etherscan.io/api'
       
-      const etherscanApiKey = 'IUB3BACMSKABM93VX2VYEE8CVPCZF22KUX'
+      const etherscanApiKey = import.meta.env.VITE_ETHERSCAN_API_KEY
+      
+      if (!etherscanApiKey) {
+        throw new Error('Etherscan API key not configured')
+      }
       
       console.log('🔍 [BALANCE DEBUG] Appel Etherscan API...')
       // Récupérer les détails de la transaction
@@ -164,7 +168,12 @@ export const usePurchases = () => {
       }
 
       // Vérifier l'adresse de destination
-      const expectedAddress = '0x194c1D795E1D4D26b5ac5C9EF0d83f319FD6805c'
+      const expectedAddress = import.meta.env.VITE_PAYMENT_WALLET_ADDRESS
+      
+      if (!expectedAddress) {
+        throw new Error('Payment wallet address not configured')
+      }
+      
       if (transaction.to.toLowerCase() !== expectedAddress.toLowerCase()) {
         console.error('❌ [BALANCE DEBUG] Mauvaise adresse de destination')
         throw new Error('Transaction envoyée à la mauvaise adresse')

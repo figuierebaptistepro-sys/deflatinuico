@@ -40,10 +40,24 @@ Deno.serve(async (req: Request) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const etherscanApiKey = 'IUB3BACMSKABM93VX2VYEE8CVPCZF22KUX'
+    const etherscanApiKey = Deno.env.get('ETHERSCAN_API_KEY')
+    
+    if (!etherscanApiKey) {
+      return new Response(
+        JSON.stringify({ error: 'Etherscan API key not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
     
     // Your wallet address where payments should be sent
-    const PAYMENT_WALLET_ADDRESS = '0x194c1D795E1D4D26b5ac5C9EF0d83f319FD6805c'
+    const PAYMENT_WALLET_ADDRESS = Deno.env.get('PAYMENT_WALLET_ADDRESS')
+    
+    if (!PAYMENT_WALLET_ADDRESS) {
+      return new Response(
+        JSON.stringify({ error: 'Payment wallet address not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
