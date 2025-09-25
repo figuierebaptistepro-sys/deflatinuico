@@ -141,6 +141,53 @@ export const useICORounds = () => {
     }
   }
 
+  const completeRound = async (roundNumber: number) => {
+    console.log('🏁 [ICO ROUNDS] Completing round', roundNumber)
+    
+    try {
+      const { data, error } = await supabase
+        .rpc('complete_ico_round', { round_num: roundNumber })
+
+      if (error) {
+        console.error('❌ [ICO ROUNDS] Error completing round:', error)
+        throw error
+      }
+
+      console.log('✅ [ICO ROUNDS] Round completed successfully:', data)
+      
+      // Refresh rounds data
+      await fetchRounds()
+      
+      return data
+    } catch (err) {
+      console.error('❌ [ICO ROUNDS] Failed to complete round:', err)
+      throw err
+    }
+  }
+
+  const resetRound = async (roundNumber: number) => {
+    console.log('🔄 [ICO ROUNDS] Resetting round', roundNumber)
+    
+    try {
+      const { data, error } = await supabase
+        .rpc('reset_ico_round', { round_num: roundNumber })
+
+      if (error) {
+        console.error('❌ [ICO ROUNDS] Error resetting round:', error)
+        throw error
+      }
+
+      console.log('✅ [ICO ROUNDS] Round reset successfully:', data)
+      
+      // Refresh rounds data
+      await fetchRounds()
+      
+      return data
+    } catch (err) {
+      console.error('❌ [ICO ROUNDS] Failed to reset round:', err)
+      throw err
+    }
+  }
   const getActiveRound = () => {
     return rounds.find(r => r.status === 'active') || null
   }
@@ -161,7 +208,9 @@ export const useICORounds = () => {
     getRoundByNumber,
     updateRoundSoldTokens,
     completeRound,
+    completeRound,
     activateRound,
+    resetRound,
     refetch: fetchRounds
   }
 }

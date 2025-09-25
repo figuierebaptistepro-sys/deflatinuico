@@ -31,8 +31,7 @@ export const ICORounds: React.FC = () => {
   const { processTransaction } = usePurchases()
   const { addToVerificationQueue } = useAutoVerification()
   const { status: txStatus, track: trackTransaction } = useTxStatus()
-  const { rounds, loading: roundsLoading, error: roundsError, activeRound, getRoundByNumber } = useICORounds()
-  const { activateRound } = useICORounds()
+  const { rounds, loading: roundsLoading, error: roundsError, activeRound, getRoundByNumber, activateRound, completeRound, resetRound } = useICORounds()
   const { status: icoStatus } = useICOStatus()
   const { 
     ethPrice, 
@@ -49,7 +48,7 @@ export const ICORounds: React.FC = () => {
   const [purchaseAmount, setPurchaseAmount] = useState('')
   const [ethAmount, setEthAmount] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
-  const [activatingRound, setActivatingRound] = useState<number | null>(null)
+  const [processingRound, setProcessingRound] = useState<{ roundNumber: number, action: string } | null>(null)
 
   // Transaction hooks
   const { 
@@ -90,19 +89,56 @@ export const ICORounds: React.FC = () => {
   const tokensToReceive = purchaseAmount && selectedRound ? Math.floor(parseFloat(purchaseAmount) / selectedRound.price) : 0
 
   const handleActivateRound = async (roundNumber: number) => {
-    if (!confirm(`Êtes-vous sûr de vouloir activer le Round ${roundNumber} ? Cela désactivera automatiquement tout autre round actif.`)) {
+    const currentRound = getRoundByNumber(roundNumber)
+    const statusText = currentRound?.status === 'completed' ? 'réactiver' : 'activer'
+    
+    if (!confirm(`Êtes-vous sûr de vouloir ${statusText} le Round ${roundNumber} ? Cela désactivera automatiquement tout autre round actif.`)) {
       return
     }
 
-    setActivatingRound(roundNumber)
+    setProcessingRound({ roundNumber, action: 'activating' })
     try {
       await activateRound(roundNumber)
-      alert(`Round ${roundNumber} activé avec succès !`)
+      alert(`Round ${roundNumber} ${statusText === 'réactiver' ? 'réactivé' : 'activé'} avec succès !`)
     } catch (error) {
       console.error('Erreur lors de l\'activation du round:', error)
-      alert(`Erreur lors de l'activation du round: ${error instanceof Error ? error.message : 'Erreur inconnue'}`)
+      alert(`Erreur lors de l'${statusText}ion du round: ${error instanceof Error ? error.message : 'Erreur inconnue'}`)
     } finally {
-      setActivatingRound(null)
+      setProcessingRound(null)
+    }
+  }
+
+  const handleCompleteRound = async (roundNumber: number) => {
+    if (!confirm(`Êtes-vous sûr de vouloir marquer le Round ${roundNumber} comme terminé ?`)) {
+      return
+    }
+
+    setProcessingRound({ roundNumber, action: 'completing' })
+    try {
+      await completeRound(roundNumber)
+      alert(`Round ${roundNumber} marqué comme terminé avec succès !`)
+    } catch (error) {
+      console.error('Erreur lors de la finalisation du round:', error)
+      alert(`Erreur lors de la finalisation du round: ${error instanceof Error ? error.message : 'Erreur inconnue'}`)
+    } finally {
+      setProcessingRound(null)
+    }
+  }
+
+  const handleResetRound = async (roundNumber: number) => {
+    if (!confirm(`Êtes-vous sûr de vouloir remettre le Round ${roundNumber} en attente ?`)) {
+      return
+    }
+
+    setProcessingRound({ roundNumber, action: 'resetting' })
+    try {
+      await resetRound(roundNumber)
+      alert(`Round ${roundNumber} remis en attente avec succès !`)
+    } catch (error) {
+      console.error('Erreur lors de la remise en attente du round:', error)
+      alert(`Erreur lors de la remise en attente du round: ${error instanceof Error ? error.message : 'Erreur inconnue'}`)
+    } finally {
+      setProcessingRound(null)
     }
   }
 
@@ -321,28 +357,81 @@ export const ICORounds: React.FC = () => {
                 </div>
 
                 {/* Admin Controls */}
-                {round.status === 'upcoming' && !icoStatus?.ico_finished && (
+                {!icoStatus?.ico_finished && (
                   <div className="mb-4">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleActivateRound(round.round_number)
-                      }}
-                      disabled={activatingRound === round.round_number}
-                      className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2"
-                    >
-                      {activatingRound === round.round_number ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                          <span>Activation...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Zap className="w-4 h-4" />
-                          <span>Activer ce Round</span>
-                        </>
+                    <div className="flex flex-wrap gap-2">
+                      {/* Activate/Reactivate Button */}
+                      {(round.status === 'upcoming' || round.status === 'completed') && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleActivateRound(round.round_number)
+                          }}
+                          disabled={processingRound?.roundNumber === round.round_number && processingRound?.action === 'activating'}
+                          className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2"
+                        >
+                          {processingRound?.roundNumber === round.round_number && processingRound?.action === 'activating' ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                              <span>{round.status === 'completed' ? 'Réactivation...' : 'Activation...'}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Zap className="w-4 h-4" />
+                              <span>{round.status === 'completed' ? 'Réactiver' : 'Activer'}</span>
+                            </>
+                          )}
+                        </button>
                       )}
-                    </button>
+
+                      {/* Complete Button */}
+                      {round.status === 'active' && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleCompleteRound(round.round_number)
+                          }}
+                          disabled={processingRound?.roundNumber === round.round_number && processingRound?.action === 'completing'}
+                          className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2"
+                        >
+                          {processingRound?.roundNumber === round.round_number && processingRound?.action === 'completing' ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                              <span>Finalisation...</span>
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="w-4 h-4" />
+                              <span>Terminer</span>
+                            </>
+                          )}
+                        </button>
+                      )}
+
+                      {/* Reset Button */}
+                      {(round.status === 'active' || round.status === 'completed') && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleResetRound(round.round_number)
+                          }}
+                          disabled={processingRound?.roundNumber === round.round_number && processingRound?.action === 'resetting'}
+                          className="bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2"
+                        >
+                          {processingRound?.roundNumber === round.round_number && processingRound?.action === 'resetting' ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                              <span>Remise en attente...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Clock className="w-4 h-4" />
+                              <span>Remettre en attente</span>
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
 
