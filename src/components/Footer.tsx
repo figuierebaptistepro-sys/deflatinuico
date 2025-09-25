@@ -119,22 +119,6 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Contract Address */}
-        <div className="border-t border-gray-800 pt-8 md:pt-12 mb-8 md:mb-12">
-          <div className="bg-gray-800 rounded-2xl md:rounded-3xl p-6 md:p-8 border border-gray-700 shadow-lg">
-            <h4 className="text-lg md:text-xl font-semibold text-white mb-4">Smart Contract Address</h4>
-            <div className="bg-black rounded-xl md:rounded-2xl p-4 md:p-6 font-mono text-xs md:text-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-                <span className="text-gray-300 break-all">0x194c1D795E1D4D26b5ac5C9EF0d83f319FD6805c</span>
-                <button className="text-orange-400 hover:text-orange-300 text-sm">Copy</button>
-              </div>
-            </div>
-            <p className="text-gray-500 text-sm mt-4">
-              ⚠️ Always verify the contract address before any purchase. Only trust this official address.
-            </p>
-          </div>
-        </div>
-
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8 md:pt-12">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
