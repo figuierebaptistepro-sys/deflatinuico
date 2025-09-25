@@ -141,30 +141,6 @@ export const useICORounds = () => {
     }
   }
 
-  const completeRound = async (roundNumber: number) => {
-    console.log('🏁 [ICO ROUNDS] Completing round', roundNumber)
-    
-    try {
-      const { data, error } = await supabase
-        .rpc('complete_ico_round', { round_num: roundNumber })
-
-      if (error) {
-        console.error('❌ [ICO ROUNDS] Error completing round:', error)
-        throw error
-      }
-
-      console.log('✅ [ICO ROUNDS] Round completed successfully:', data)
-      
-      // Refresh rounds data
-      await fetchRounds()
-      
-      return data
-    } catch (err) {
-      console.error('❌ [ICO ROUNDS] Failed to complete round:', err)
-      throw err
-    }
-  }
-
   const resetRound = async (roundNumber: number) => {
     console.log('🔄 [ICO ROUNDS] Resetting round', roundNumber)
     
@@ -207,7 +183,6 @@ export const useICORounds = () => {
     activeRound: getActiveRound(),
     getRoundByNumber,
     updateRoundSoldTokens,
-    completeRound,
     completeRound,
     activateRound,
     resetRound,
