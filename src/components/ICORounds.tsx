@@ -32,6 +32,7 @@ export const ICORounds: React.FC = () => {
   const { addToVerificationQueue } = useAutoVerification()
   const { status: txStatus, track: trackTransaction } = useTxStatus()
   const { rounds, loading: roundsLoading, error: roundsError, activeRound, getRoundByNumber } = useICORounds()
+  const { activateRound } = useICORounds()
   const { status: icoStatus } = useICOStatus()
   const { 
     ethPrice, 
@@ -48,6 +49,7 @@ export const ICORounds: React.FC = () => {
   const [purchaseAmount, setPurchaseAmount] = useState('')
   const [ethAmount, setEthAmount] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
+  const [activatingRound, setActivatingRound] = useState<number | null>(null)
 
   // Transaction hooks
   const { 
@@ -86,6 +88,23 @@ export const ICORounds: React.FC = () => {
 
   const selectedRound = getRoundByNumber(selectedRoundNumber)
   const tokensToReceive = purchaseAmount && selectedRound ? Math.floor(parseFloat(purchaseAmount) / selectedRound.price) : 0
+
+  const handleActivateRound = async (roundNumber: number) => {
+    if (!confirm(`Êtes-vous sûr de vouloir activer le Round ${roundNumber} ? Cela désactivera automatiquement tout autre round actif.`)) {
+      return
+    }
+
+    setActivatingRound(roundNumber)
+    try {
+      await activateRound(roundNumber)
+      alert(`Round ${roundNumber} activé avec succès !`)
+    } catch (error) {
+      console.error('Erreur lors de l\'activation du round:', error)
+      alert(`Erreur lors de l'activation du round: ${error instanceof Error ? error.message : 'Erreur inconnue'}`)
+    } finally {
+      setActivatingRound(null)
+    }
+  }
 
   const handlePurchase = async () => {
     if (!isConnected || !address) {
@@ -300,6 +319,32 @@ export const ICORounds: React.FC = () => {
                     <div className="text-gray-600 text-sm md:text-base">per token</div>
                   </div>
                 </div>
+
+                {/* Admin Controls */}
+                {round.status === 'upcoming' && !icoStatus?.ico_finished && (
+                  <div className="mb-4">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleActivateRound(round.round_number)
+                      }}
+                      disabled={activatingRound === round.round_number}
+                      className="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2"
+                    >
+                      {activatingRound === round.round_number ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <span>Activation...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="w-4 h-4" />
+                          <span>Activer ce Round</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-4 md:gap-6 mb-6">
                   <div className="bg-gray-50 rounded-xl p-4 md:p-6">
