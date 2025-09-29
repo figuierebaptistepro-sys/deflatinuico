@@ -190,6 +190,15 @@ export const Roadmap: React.FC = () => {
               <button className="border border-gray-300 hover:border-gray-400 text-gray-700 px-8 md:px-12 py-4 md:py-5 rounded-full font-semibold text-lg md:text-xl transition-all duration-200 shadow-lg hover:shadow-xl">
                 Rejoindre Telegram
               </button>
+              <a 
+                href="https://deflatinu.gitbook.io/deflatinu-docs/" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border border-gray-300 hover:border-gray-400 text-gray-700 px-8 md:px-12 py-4 md:py-5 rounded-full font-semibold text-lg md:text-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2"
+              >
+                <FileText className="w-5 h-5" />
+                <span>Whitepaper</span>
+              </a>
             </div>
           </div>
         </div>

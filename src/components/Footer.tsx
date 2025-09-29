@@ -67,6 +67,12 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li>
+                <a href="https://deflatinu.gitbook.io/deflatinu-docs/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-orange-400 transition-colors flex items-center text-sm md:text-lg">
+                  <FileText className="w-5 h-5 mr-3" />
+                  Whitepaper
+                </a>
+              </li>
+              <li>
                 <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors flex items-center text-sm md:text-lg">
                   <Shield className="w-5 h-5 mr-3" />
                   Security Audit
