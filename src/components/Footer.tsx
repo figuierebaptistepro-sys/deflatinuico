@@ -1,5 +1,5 @@
 import React from 'react'
-import { Shield, Twitter, Send, Globe, FileText, Mail, Coins, Instagram } from 'lucide-react'
+import { Shield, Twitter, Send, Globe, FileText, Mail, Coins, Instagram, MessageCircle } from 'lucide-react'
 
 export const Footer: React.FC = () => {
   return (
@@ -23,6 +23,9 @@ export const Footer: React.FC = () => {
             <div className="flex space-x-3 md:space-x-4">
               <a href="#" className="w-10 md:w-12 h-10 md:h-12 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-500 transition-colors shadow-lg">
                 <Twitter className="w-6 h-6 text-white" />
+              </a>
+              <a href="https://discord.gg/YkMpHR65" target="_blank" rel="noopener noreferrer" className="w-10 md:w-12 h-10 md:h-12 bg-gray-800 rounded-full flex items-center justify-center hover:bg-indigo-500 transition-colors shadow-lg">
+                <MessageCircle className="w-6 h-6 text-white" />
               </a>
               <a href="#" className="w-10 md:w-12 h-10 md:h-12 bg-gray-800 rounded-full flex items-center justify-center hover:bg-pink-500 transition-colors shadow-lg">
                 <Instagram className="w-6 h-6 text-white" />
