@@ -95,15 +95,6 @@ export const Header: React.FC = () => {
                 Roadmap
               </button>
               <a 
-                href="#" 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 flex items-center space-x-1"
-              >
-                <span>Whitepaper</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
-              <a 
                 href="https://deflatinu.gitbook.io/deflatinu-docs/" 
                 target="_blank"
                 rel="noopener noreferrer"
@@ -210,16 +201,6 @@ export const Header: React.FC = () => {
                 >
                   Roadmap
                 </button>
-                <a 
-                  href="#" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 font-medium flex items-center justify-between"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <span>Whitepaper</span>
-                  <ExternalLink className="w-4 h-4" />
-                </a>
                 <a 
                   href="https://deflatinu.gitbook.io/deflatinu-docs/" 
                   target="_blank"

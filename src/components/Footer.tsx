@@ -61,12 +61,6 @@ export const Footer: React.FC = () => {
             <h4 className="text-lg md:text-xl font-semibold text-white mb-4 md:mb-6">Resources</h4>
             <ul className="space-y-3 md:space-y-4">
               <li>
-                <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors flex items-center text-sm md:text-lg">
-                  <FileText className="w-5 h-5 mr-3" />
-                  Whitepaper
-                </a>
-              </li>
-              <li>
                 <a href="https://deflatinu.gitbook.io/deflatinu-docs/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-orange-400 transition-colors flex items-center text-sm md:text-lg">
                   <FileText className="w-5 h-5 mr-3" />
                   Whitepaper
