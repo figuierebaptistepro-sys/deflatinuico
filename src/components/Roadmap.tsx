@@ -1,5 +1,5 @@
 import React from 'react'
-import { CheckCircle, Circle, Clock, Rocket, Users, TrendingUp, Globe, Zap, Coins } from 'lucide-react'
+import { CheckCircle, Circle, Clock, Rocket, Users, TrendingUp, Globe, Zap, Coins, FileText } from 'lucide-react'
 
 interface RoadmapItem {
   phase: string

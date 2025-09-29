@@ -1,5 +1,5 @@
 import React from 'react'
-import { PieChart, TrendingDown, Shield, Repeat, Users, Wallet, Coins } from 'lucide-react'
+import { PieChart, TrendingDown, Shield, Repeat, Users, Wallet, Coins, FileText } from 'lucide-react'
 
 export const Tokenomics: React.FC = () => {
   const taxDistribution = [
