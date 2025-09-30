@@ -27,8 +27,10 @@ export const useManualTotal = () => {
         throw fetchError
       }
 
-      console.log('✅ [MANUAL TOTAL] Données récupérées:', result)
-      setData(result)
+      // La fonction retourne un tableau, prendre le premier élément
+      const totalData = Array.isArray(result) ? result[0] : result
+      console.log('✅ [MANUAL TOTAL] Données récupérées:', totalData)
+      setData(totalData)
     } catch (err) {
       console.error('❌ [MANUAL TOTAL] Échec:', err)
       setError(err instanceof Error ? err.message : 'Erreur inconnue')
@@ -51,12 +53,13 @@ export const useManualTotal = () => {
         throw updateError
       }
 
-      console.log('✅ [MANUAL TOTAL] Montant mis à jour:', result)
+      const updateResult = Array.isArray(result) ? result[0] : result
+      console.log('✅ [MANUAL TOTAL] Montant mis à jour:', updateResult)
       
       // Rafraîchir les données
       await fetchCurrentTotal()
       
-      return result
+      return updateResult
     } catch (err) {
       console.error('❌ [MANUAL TOTAL] Échec mise à jour:', err)
       setError(err instanceof Error ? err.message : 'Erreur de mise à jour')
@@ -80,12 +83,13 @@ export const useManualTotal = () => {
         throw toggleError
       }
 
-      console.log('✅ [MANUAL TOTAL] Mode basculé:', result)
+      const toggleResult = Array.isArray(result) ? result[0] : result
+      console.log('✅ [MANUAL TOTAL] Mode basculé:', toggleResult)
       
       // Rafraîchir les données
       await fetchCurrentTotal()
       
-      return result
+      return toggleResult
     } catch (err) {
       console.error('❌ [MANUAL TOTAL] Échec basculement:', err)
       setError(err instanceof Error ? err.message : 'Erreur de basculement')
