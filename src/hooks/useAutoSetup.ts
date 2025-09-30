@@ -11,7 +11,7 @@ export const useAutoSetup = () => {
         console.log('🔧 [AUTO SETUP] Vérification de la configuration...')
         
         // Utiliser la fonction update_manual_total_columns pour configurer la DB
-        const { error: setupError } = await supabase.rpc('update_manual_total_columns')
+        const { error: setupError } = await supabase.rpc('setup_manual_total_columns')
         
         if (setupError) {
           console.error('❌ [AUTO SETUP] Erreur de configuration:', setupError)
