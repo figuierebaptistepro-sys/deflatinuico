@@ -47,7 +47,7 @@ export const Header: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             
             {/* Logo */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center">
               <div className="w-16 h-16 flex items-center justify-center">
                 <img 
                   src="/DEFLATINU LOGO.png" 
@@ -60,7 +60,7 @@ export const Header: React.FC = () => {
                   }}
                 />
               </div>
-              <div className="-ml-1">
+              <div>
                 <span className="text-xl font-bold text-gray-900">
                   <span className="text-orange-500">DEFLAT</span>
                   <span className="text-blue-600">INU</span>
