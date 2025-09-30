@@ -1,9 +1,11 @@
 import React from 'react'
 import { useICOStatus } from '../hooks/useICOStatus'
+import { useManualTotal } from '../hooks/useManualTotal'
 import { CheckCircle, Clock, DollarSign, Coins, Calendar, AlertTriangle } from 'lucide-react'
 
 export const ICOStatus: React.FC = () => {
   const { status, loading, error, finishICO } = useICOStatus()
+  const { data: manualTotalData } = useManualTotal()
 
   const handleFinishICO = async () => {
     if (!confirm('Êtes-vous sûr de vouloir terminer l\'ICO ? Cette action est irréversible.')) {
@@ -104,9 +106,16 @@ export const ICOStatus: React.FC = () => {
             </div>
             <div>
               <div className="text-2xl md:text-3xl font-bold text-green-600">
-                ${status.total_raised_usd.toLocaleString()}
+                ${(manualTotalData?.total_raised || status.total_raised_usd).toLocaleString()}
               </div>
-              <div className="text-green-700 text-sm md:text-base">Total Levé</div>
+              <div className="text-green-700 text-sm md:text-base">
+                Total Levé
+                {manualTotalData?.is_manual && (
+                  <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                    Manuel
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>

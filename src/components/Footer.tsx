@@ -1,5 +1,6 @@
 import React from 'react'
 import { Shield, Twitter, Send, Globe, FileText, Mail, Coins, Instagram, MessageCircle } from 'lucide-react'
+import { useManualTotal } from '../hooks/useManualTotal'
 
 // Discord SVG Icon Component
 const DiscordIcon: React.FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
@@ -8,6 +9,8 @@ const DiscordIcon: React.FC<{ className?: string }> = ({ className = "w-6 h-6" }
   </svg>
 )
 export const Footer: React.FC = () => {
+  const { data: manualTotalData } = useManualTotal()
+
   return (
     <footer className="bg-gray-900 py-12 md:py-20 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
@@ -115,8 +118,17 @@ export const Footer: React.FC = () => {
             
             <div className="space-y-6">
               <div className="bg-gray-800 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg">
-                <div className="text-2xl md:text-3xl font-bold text-orange-400">$817,500</div>
-                <div className="text-gray-400 text-sm md:text-base">Raised in ICO</div>
+                <div className="text-2xl md:text-3xl font-bold text-orange-400">
+                  ${(manualTotalData?.total_raised || 817500).toLocaleString()}
+                </div>
+                <div className="text-gray-400 text-sm md:text-base">
+                  Raised in ICO
+                  {manualTotalData?.is_manual && (
+                    <span className="ml-2 text-xs bg-blue-600 text-blue-100 px-2 py-1 rounded">
+                      Manuel
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="bg-gray-800 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg">
                 <div className="text-2xl md:text-3xl font-bold text-blue-400">2,847</div>
