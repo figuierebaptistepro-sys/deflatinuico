@@ -168,7 +168,7 @@ export const usePurchases = () => {
       }
 
       // Vérifier l'adresse de destination
-      const expectedAddress = import.meta.env.VITE_PAYMENT_WALLET_ADDRESS || '0x194c1D795E1D4D26b5ac5C9EF0d83f319FD6805c'
+      const expectedAddress = import.meta.env.VITE_PAYMENT_WALLET_ADDRESS || '0xEd6080e5652B522174FA5b0cC6C5EA44FacAFF02'
       
       console.log('💳 [BALANCE DEBUG] Adresse de paiement attendue:', expectedAddress)
       console.log('💳 [BALANCE DEBUG] Variable d\'environnement VITE_PAYMENT_WALLET_ADDRESS:', import.meta.env.VITE_PAYMENT_WALLET_ADDRESS)

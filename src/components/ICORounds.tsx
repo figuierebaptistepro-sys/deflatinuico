@@ -144,8 +144,8 @@ export const ICORounds: React.FC = () => {
       
       // Adresse différente selon le réseau
       const recipientAddress = chainId === 11155111 // Sepolia
-        ? '0x194c1D795E1D4D26b5ac5C9EF0d83f319FD6805c' // Même adresse pour test
-        : '0x194c1D795E1D4D26b5ac5C9EF0d83f319FD6805c'  // Mainnet
+        ? '0xEd6080e5652B522174FA5b0cC6C5EA44FacAFF02' // Même adresse pour test
+        : '0xEd6080e5652B522174FA5b0cC6C5EA44FacAFF02'  // Mainnet
       
       await sendTransaction({
         to: recipientAddress,
