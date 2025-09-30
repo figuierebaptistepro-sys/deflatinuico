@@ -208,7 +208,11 @@ export const ICORounds: React.FC = () => {
   }, [sendError, confirmError])
 
   const getProgressPercentage = (round: ICORound) => {
-    return (round.sold_tokens / round.total_tokens) * 100
+    if (!round.total_tokens || round.total_tokens === 0) {
+      return 0
+    }
+    const percentage = (round.sold_tokens / round.total_tokens) * 100
+    return Math.min(Math.max(percentage, 0), 100) // Ensure between 0 and 100
   }
 
   const getStatusColor = (status: string) => {
