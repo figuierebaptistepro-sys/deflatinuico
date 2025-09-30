@@ -21,16 +21,18 @@ export const useICOStatus = () => {
     setError(null)
 
     try {
-      // Get ICO settings
+      // Get ICO settings (may not exist yet)
       const { data: settingsData, error: settingsError } = await supabase
         .from('ico_settings')
         .select('*')
-        .single()
+        .maybeSingle()
 
-      if (settingsError) {
+      if (settingsError && settingsError.code !== 'PGRST116') {
         console.error('❌ [ICO STATUS] Error fetching settings:', settingsError)
         throw settingsError
       }
+
+      console.log('📊 [ICO STATUS] Settings data:', settingsData)
 
       // Get active rounds count
       const { data: activeRoundsData, error: roundsError } = await supabase
@@ -43,6 +45,8 @@ export const useICOStatus = () => {
         throw roundsError
       }
 
+      console.log('🎯 [ICO STATUS] Active rounds:', activeRoundsData)
+
       // Get total tokens sold from all rounds
       const { data: roundsData, error: roundsSumError } = await supabase
         .from('ico_rounds')
@@ -53,17 +57,19 @@ export const useICOStatus = () => {
         throw roundsSumError
       }
 
+      console.log('💰 [ICO STATUS] Rounds data for tokens:', roundsData)
+
       const totalTokensSold = roundsData?.reduce((sum, round) => sum + (round.sold_tokens || 0), 0) || 0
 
       // Construct status object
       const status: ICOStatus = {
-        ico_finished: settingsData?.ico_finished || false,
+        ico_finished: settingsData?.ico_finished ?? false,
         finish_date: settingsData?.finish_date || undefined,
         total_raised_usd: settingsData?.use_manual_total 
-          ? (settingsData?.manual_total_raised_usd || 0)
-          : (settingsData?.total_raised_usd || 0),
+          ? (settingsData?.manual_total_raised_usd ?? 0)
+          : (settingsData?.total_raised_usd ?? 0),
         total_tokens_sold: totalTokensSold,
-        active_rounds: activeRoundsData?.length || 0,
+        active_rounds: activeRoundsData?.length ?? 0,
         last_updated: new Date().toISOString()
       }
 
@@ -72,6 +78,16 @@ export const useICOStatus = () => {
     } catch (err) {
       console.error('❌ [ICO STATUS] Failed to fetch status:', err)
       setError(err instanceof Error ? err.message : 'Failed to fetch ICO status')
+      
+      // Set a fallback status to prevent complete failure
+      const fallbackStatus: ICOStatus = {
+        ico_finished: false,
+        total_raised_usd: 0,
+        total_tokens_sold: 0,
+        active_rounds: 0,
+        last_updated: new Date().toISOString()
+      }
+      setStatus(fallbackStatus)
     } finally {
       setLoading(false)
     }
