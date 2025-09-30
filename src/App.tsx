@@ -11,12 +11,16 @@ import { Footer } from './components/Footer'
 import { FloatingBuyButton } from './components/FloatingBuyButton'
 import { useAccount } from 'wagmi'
 import { useAutoVerification } from './hooks/useAutoVerification'
+import { useAutoSetup } from './hooks/useAutoSetup'
 
 function AppContent() {
   const { isConnected } = useAccount()
   
   // Initialize auto-verification
   useAutoVerification()
+  
+  // Initialize auto-setup
+  useAutoSetup()
 
   return (
     <div className="min-h-screen bg-gray-900">
