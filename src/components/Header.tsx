@@ -47,16 +47,16 @@ export const Header: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             
             {/* Logo */}
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 flex items-center justify-center">
+            <div className="flex items-center space-x-2">
+              <div className="w-14 h-14 flex items-center justify-center">
                 <img 
                   src="/DEFLATINU LOGO.png" 
                   alt="DEFLAT INU Logo" 
-                  className="w-12 h-12 object-contain"
+                  className="w-14 h-14 object-contain"
                   onError={(e) => {
                     console.log('Logo failed to load, using fallback')
                     e.currentTarget.style.display = 'none'
-                    e.currentTarget.parentElement!.innerHTML = '<span class="text-orange-500 font-bold text-2xl">🐕</span>'
+                    e.currentTarget.parentElement!.innerHTML = '<span class="text-orange-500 font-bold text-3xl">🐕</span>'
                   }}
                 />
               </div>
