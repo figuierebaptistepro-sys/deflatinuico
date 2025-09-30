@@ -328,8 +328,10 @@ export const ICORounds: React.FC = () => {
                     <div className="text-gray-600 text-sm md:text-base">Total Tokens</div>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-4 md:p-6">
-                    <div className="text-lg md:text-xl font-bold text-orange-500">{round.bonus}</div>
-                    <div className="text-gray-600 text-sm md:text-base">Bonus Tokens</div>
+                    <div className="text-lg md:text-xl font-bold text-blue-500">
+                      {(round.total_tokens - round.sold_tokens).toLocaleString()}
+                    </div>
+                    <div className="text-gray-600 text-sm md:text-base">Available</div>
                   </div>
                 </div>
 
@@ -389,8 +391,10 @@ export const ICORounds: React.FC = () => {
                     <div className="text-gray-600 text-sm md:text-base">Price per token</div>
                   </div>
                   <div>
-                    <div className="text-2xl md:text-3xl font-bold text-blue-500">{selectedRound.bonus}</div>
-                    <div className="text-gray-600 text-sm md:text-base">Bonus tokens</div>
+                    <div className="text-2xl md:text-3xl font-bold text-blue-500">
+                      {(selectedRound.total_tokens - selectedRound.sold_tokens).toLocaleString()}
+                    </div>
+                    <div className="text-gray-600 text-sm md:text-base">Available</div>
                   </div>
                 </div>
               </div>

@@ -6,6 +6,7 @@ import { ICORounds } from './components/ICORounds'
 import { TransactionHistory } from './components/TransactionHistory'
 import { Tokenomics } from './components/Tokenomics'
 import { Roadmap } from './components/Roadmap'
+import { FAQ } from './components/FAQ'
 import { Footer } from './components/Footer'
 import { FloatingBuyButton } from './components/FloatingBuyButton'
 import { useAccount } from 'wagmi'
@@ -31,6 +32,7 @@ function AppContent() {
       )}
       <Tokenomics />
       <Roadmap />
+      <FAQ />
       <Footer />
       <FloatingBuyButton />
     </div>

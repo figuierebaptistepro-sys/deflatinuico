@@ -77,18 +77,8 @@ export const Footer: React.FC = () => {
                   Whitepaper
                 </a>
               </li>
-              <li>
-                <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors flex items-center text-sm md:text-lg">
-                  <Shield className="w-5 h-5 mr-3" />
-                  Security Audit
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors flex items-center text-sm md:text-lg">
-                  <Globe className="w-5 h-5 mr-3" />
-                  Smart Contract
-                </a>
-              </li>
+              <li><a href="#faq" className="text-gray-400 hover:text-orange-400 transition-colors text-sm md:text-lg">FAQ</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-orange-400 transition-colors text-sm md:text-lg">Support</a></li>
             </ul>
           </div>
 
@@ -148,10 +138,8 @@ export const Footer: React.FC = () => {
             <div className="text-gray-500 text-sm md:text-base">
               © 2025 DEFLAT INU. All rights reserved.
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8">
-              <a href="#" className="text-gray-500 hover:text-white transition-colors text-sm md:text-base">Terms of Service</a>
-              <a href="#" className="text-gray-500 hover:text-white transition-colors text-sm md:text-base">Privacy Policy</a>
-              <a href="#" className="text-gray-500 hover:text-white transition-colors text-sm md:text-base">Legal Notice</a>
+            <div className="text-gray-500 text-sm md:text-base">
+              Built with ❤️ for the crypto community
             </div>
           </div>
         </div>
