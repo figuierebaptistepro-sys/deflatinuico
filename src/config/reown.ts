@@ -125,12 +125,7 @@ const wagmiAdapter = new WagmiAdapter({
     multicall: false,
   },
   connectors: [
-    walletConnect({ projectId, metadata, showQrModal: false }),
-    injected({ shimDisconnect: true }),
-    coinbaseWallet({
-      appName: metadata.name,
-      appLogoUrl: metadata.icons[0]
-    })
+    injected({ shimDisconnect: true })
   ]
 })
 
@@ -156,10 +151,10 @@ export const modal = createAppKit({
   enableSocials: false,
   allowUnsafeOrigin: true,
   enableWalletFeatures: false,
-  includeWalletIds: [
-    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96'  // MetaMask only
-  ],
-  featuredWalletIds: []
+  includeWalletIds: [],
+  excludeWalletIds: 'ALL',
+  featuredWalletIds: [],
+  enableWalletConnect: false
 })
 
 export const queryClient = new QueryClient()
