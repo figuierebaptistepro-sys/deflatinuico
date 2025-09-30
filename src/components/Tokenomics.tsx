@@ -149,51 +149,6 @@ export const Tokenomics: React.FC = () => {
             <p className="text-gray-600 text-sm md:text-base">Holders rewarded by supply reduction</p>
           </div>
         </div>
-
-        {/* Call to Action */}
-        <div className="mt-16 md:mt-24 text-center">
-          <div className="bg-gradient-to-r from-orange-50 to-blue-50 rounded-2xl md:rounded-3xl p-8 md:p-16 border border-orange-200 shadow-xl">
-            <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 md:mb-6">
-              Rejoignez l'aventure DEFLAT INU
-            </h3>
-            <p className="text-base md:text-lg lg:text-xl text-gray-600 mb-8 md:mb-10 max-w-2xl mx-auto px-4">
-              Soyez parmi les premiers à investir dans l'avenir des tokens déflationnistes
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 md:space-x-8">
-              <button 
-                onClick={() => {
-                  const icoSection = document.querySelector('#ico')
-                  if (icoSection) {
-                    icoSection.scrollIntoView({ behavior: 'smooth' })
-                    // Focus on purchase form after scroll
-                    setTimeout(() => {
-                      const purchaseForm = icoSection.querySelector('input[type="number"]')
-                      if (purchaseForm) {
-                        purchaseForm.focus()
-                      }
-                    }, 1000)
-                  }
-                }}
-                className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-6 sm:px-8 md:px-12 py-3 sm:py-4 md:py-5 rounded-full font-semibold text-base sm:text-lg md:text-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 sm:space-x-3"
-              >
-                <Coins className="w-5 h-5 sm:w-6 sm:h-6" />
-                <span>Rejoindre l'ICO</span>
-              </button>
-              <button className="w-full sm:w-auto border border-gray-300 hover:border-gray-400 text-gray-700 px-6 sm:px-8 md:px-12 py-3 sm:py-4 md:py-5 rounded-full font-semibold text-base sm:text-lg md:text-xl transition-all duration-200 shadow-lg hover:shadow-xl">
-                Rejoindre Telegram
-              </button>
-              <a 
-                href="https://deflatinu.gitbook.io/deflatinu-docs/" 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto border border-gray-300 hover:border-gray-400 text-gray-700 px-6 sm:px-8 md:px-12 py-3 sm:py-4 md:py-5 rounded-full font-semibold text-base sm:text-lg md:text-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
-              >
-                <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span>Whitepaper</span>
-              </a>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   )
