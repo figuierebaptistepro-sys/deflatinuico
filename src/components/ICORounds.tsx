@@ -295,7 +295,9 @@ export const ICORounds: React.FC = () => {
                 className={`bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 border-2 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl ${
                   selectedRoundNumber === round.round_number 
                     ? 'border-orange-500 bg-orange-50' 
-                    : 'border-gray-200 hover:border-orange-300'
+                    : round.status === 'active' 
+                      ? 'border-green-200 bg-green-50 hover:border-green-300'
+                      : 'border-gray-200 hover:border-orange-300'
                 }`}
                 onClick={() => setSelectedRoundNumber(round.round_number)}
               >

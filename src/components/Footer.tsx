@@ -15,13 +15,24 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-12 md:mb-16">
           {/* Brand */}
           <div>
-            <div className="flex items-center space-x-3 md:space-x-4 mb-6 md:mb-8">
-              <div className="w-10 md:w-12 h-10 md:h-12 bg-gradient-to-r from-orange-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <Shield className="w-6 h-6 text-white" />
+            <div className="flex items-center mb-6 md:mb-8">
+              <div className="w-16 h-16 flex items-center justify-center">
+                <img 
+                  src="/DEFLATINU LOGO.png" 
+                  alt="DEFLAT INU Logo" 
+                  className="w-16 h-16 object-contain"
+                  onError={(e) => {
+                    console.log('Logo failed to load, using fallback')
+                    e.currentTarget.style.display = 'none'
+                    e.currentTarget.parentElement!.innerHTML = '<span class="text-orange-500 font-bold text-4xl">🐕</span>'
+                  }}
+                />
               </div>
-              <span className="text-xl md:text-2xl font-bold text-white">
+              <div>
+                <span className="text-xl md:text-2xl font-bold text-white">
                 <span className="text-orange-400">DEFLATINU</span>
-              </span>
+                </span>
+              </div>
             </div>
             <p className="text-gray-400 mb-6 md:mb-8 leading-relaxed text-sm md:text-lg">
               The revolutionary deflationary token that protects investors and rewards long-term holders.
