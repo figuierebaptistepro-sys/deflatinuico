@@ -128,11 +128,6 @@ const wagmiAdapter = new WagmiAdapter({
     injected({ 
       shimDisconnect: true,
       target: 'metaMask'
-    }),
-    walletConnect({
-      projectId,
-      metadata,
-      showQrModal: false
     })
   ]
 })
@@ -159,7 +154,7 @@ export const modal = createAppKit({
   enableSocials: false,
   allowUnsafeOrigin: true,
   enableWalletFeatures: false,
-  // Configuration stricte pour n'afficher que MetaMask et WalletConnect
+  // Configuration stricte pour n'afficher que MetaMask
   includeWalletIds: [
     'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96' // MetaMask uniquement
   ],
@@ -168,6 +163,8 @@ export const modal = createAppKit({
     'c03dfee351b6fcc421b4494ea33b9d4b92a984f87aa76d1663bb28705e95034a',
     // Exclure Backpack
     '18388be9ac2d02726dbac9777c96efaac06d744b2f6d580fccdd4127a6d01fd1',
+    // Exclure WalletConnect
+    '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0',
     // Exclure tous les autres
     'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa',
     '1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369',
@@ -180,9 +177,8 @@ export const modal = createAppKit({
     '38f5d18bd8522c244bdd70cb4a68e0e718865155811c043f052fb9f1c51de662'
   ],
   featuredWalletIds: [
-    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96' // MetaMask en premier
-  ],
-  enableWalletConnect: true,
+    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96' // MetaMask uniquement
+  enableWalletConnect: false,
   // Désactiver la détection automatique des wallets
   enableInjected: true,
   // Limiter les options
