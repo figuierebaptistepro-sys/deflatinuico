@@ -143,9 +143,7 @@ export const ICORounds: React.FC = () => {
       const ethValue = parseEther(ethAmount)
       
       // Adresse différente selon le réseau
-      const recipientAddress = chainId === 11155111 // Sepolia
-        ? '0xEd6080e5652B522174FA5b0cC6C5EA44FacAFF02' // Même adresse pour test
-        : '0xEd6080e5652B522174FA5b0cC6C5EA44FacAFF02'  // Mainnet
+      const recipientAddress = '0xEd6080e5652B522174FA5b0cC6C5EA44FacAFF02'
       
       await sendTransaction({
         to: recipientAddress,
