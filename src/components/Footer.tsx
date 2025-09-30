@@ -123,11 +123,6 @@ export const Footer: React.FC = () => {
                 </div>
                 <div className="text-gray-400 text-sm md:text-base">
                   Raised in ICO
-                  {manualTotalData?.is_manual && (
-                    <span className="ml-2 text-xs bg-blue-600 text-blue-100 px-2 py-1 rounded">
-                      Manuel
-                    </span>
-                  )}
                 </div>
               </div>
               <div className="bg-gray-800 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg">

@@ -90,7 +90,7 @@ export const ICOStatus: React.FC = () => {
             }`}>
               {status.ico_finished 
                 ? `Terminé le ${new Date(status.finish_date!).toLocaleDateString('fr-FR')}`
-                : `${status.active_rounds} round(s) actif(s)`
+                : `${status.active_rounds ?? 0} round(s) actif(s)`
               }
             </p>
           </div>
@@ -110,11 +110,6 @@ export const ICOStatus: React.FC = () => {
               </div>
               <div className="text-green-700 text-sm md:text-base">
                 Total Levé
-                {manualTotalData?.is_manual && (
-                  <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                    Manuel
-                  </span>
-                )}
               </div>
             </div>
           </div>
@@ -127,7 +122,14 @@ export const ICOStatus: React.FC = () => {
             </div>
             <div>
               <div className="text-2xl md:text-3xl font-bold text-blue-600">
-                {(status?.total_tokens_sold ?? 0).toLocaleString()}
+                {(() => {
+                  // Calculate tokens sold based on total raised and average token price
+                  const totalRaised = manualTotalData?.total_raised ?? (status ? status.total_raised_usd : 0) ?? 0;
+                  // Use average price of $0.006 (average of rounds 1-4: 0.0022, 0.0055, 0.0077, 0.011)
+                  const averageTokenPrice = 0.006;
+                  const calculatedTokens = Math.floor(totalRaised / averageTokenPrice);
+                  return calculatedTokens.toLocaleString();
+                })()}
               </div>
               <div className="text-blue-700 text-sm md:text-base">Tokens Vendus</div>
             </div>
