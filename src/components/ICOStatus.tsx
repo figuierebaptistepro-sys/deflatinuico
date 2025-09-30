@@ -106,7 +106,7 @@ export const ICOStatus: React.FC = () => {
             </div>
             <div>
               <div className="text-2xl md:text-3xl font-bold text-green-600">
-                ${(manualTotalData?.total_raised || status.total_raised_usd).toLocaleString()}
+                ${(manualTotalData?.total_raised || status.total_raised_usd || 0).toLocaleString()}
               </div>
               <div className="text-green-700 text-sm md:text-base">
                 Total Levé
