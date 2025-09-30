@@ -106,7 +106,7 @@ export const ICOStatus: React.FC = () => {
             </div>
             <div>
               <div className="text-2xl md:text-3xl font-bold text-green-600">
-                ${(manualTotalData?.total_raised || status.total_raised_usd || 0).toLocaleString()}
+                ${(manualTotalData?.total_raised ?? (status?.total_raised_usd ?? 0)).toLocaleString()}
               </div>
               <div className="text-green-700 text-sm md:text-base">
                 Total Levé
@@ -127,7 +127,7 @@ export const ICOStatus: React.FC = () => {
             </div>
             <div>
               <div className="text-2xl md:text-3xl font-bold text-blue-600">
-                {status.total_tokens_sold.toLocaleString()}
+                {(status?.total_tokens_sold ?? 0).toLocaleString()}
               </div>
               <div className="text-blue-700 text-sm md:text-base">Tokens Vendus</div>
             </div>
