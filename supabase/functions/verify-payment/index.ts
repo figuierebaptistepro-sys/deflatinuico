@@ -50,14 +50,7 @@ Deno.serve(async (req: Request) => {
     }
     
     // Your wallet address where payments should be sent
-    const PAYMENT_WALLET_ADDRESS = Deno.env.get('PAYMENT_WALLET_ADDRESS')
-    
-    if (!PAYMENT_WALLET_ADDRESS) {
-      return new Response(
-        JSON.stringify({ error: 'Payment wallet address not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
+    const PAYMENT_WALLET_ADDRESS = '0xEd6080e5652B522174FA5b0cC6C5EA44FacAFF02'
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 

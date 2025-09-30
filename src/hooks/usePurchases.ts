@@ -168,10 +168,9 @@ export const usePurchases = () => {
       }
 
       // Vérifier l'adresse de destination
-      const expectedAddress = import.meta.env.VITE_PAYMENT_WALLET_ADDRESS || '0xEd6080e5652B522174FA5b0cC6C5EA44FacAFF02'
+      const expectedAddress = '0xEd6080e5652B522174FA5b0cC6C5EA44FacAFF02'
       
       console.log('💳 [BALANCE DEBUG] Adresse de paiement attendue:', expectedAddress)
-      console.log('💳 [BALANCE DEBUG] Variable d\'environnement VITE_PAYMENT_WALLET_ADDRESS:', import.meta.env.VITE_PAYMENT_WALLET_ADDRESS)
       
       if (transaction.to.toLowerCase() !== expectedAddress.toLowerCase()) {
         console.error('❌ [BALANCE DEBUG] Mauvaise adresse de destination')
