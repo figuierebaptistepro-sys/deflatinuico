@@ -174,21 +174,21 @@ export const Tokenomics: React.FC = () => {
                     }, 1000)
                   }
                 }}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-8 md:px-12 py-4 md:py-5 rounded-full font-semibold text-lg md:text-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-3"
+                className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-6 sm:px-8 md:px-12 py-3 sm:py-4 md:py-5 rounded-full font-semibold text-base sm:text-lg md:text-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 sm:space-x-3"
               >
-                <Coins className="w-6 h-6" />
+                <Coins className="w-5 h-5 sm:w-6 sm:h-6" />
                 <span>Rejoindre l'ICO</span>
               </button>
-              <button className="border border-gray-300 hover:border-gray-400 text-gray-700 px-8 md:px-12 py-4 md:py-5 rounded-full font-semibold text-lg md:text-xl transition-all duration-200 shadow-lg hover:shadow-xl">
+              <button className="w-full sm:w-auto border border-gray-300 hover:border-gray-400 text-gray-700 px-6 sm:px-8 md:px-12 py-3 sm:py-4 md:py-5 rounded-full font-semibold text-base sm:text-lg md:text-xl transition-all duration-200 shadow-lg hover:shadow-xl">
                 Rejoindre Telegram
               </button>
               <a 
                 href="https://deflatinu.gitbook.io/deflatinu-docs/" 
                 target="_blank"
                 rel="noopener noreferrer"
-                className="border border-gray-300 hover:border-gray-400 text-gray-700 px-8 md:px-12 py-4 md:py-5 rounded-full font-semibold text-lg md:text-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                className="w-full sm:w-auto border border-gray-300 hover:border-gray-400 text-gray-700 px-6 sm:px-8 md:px-12 py-3 sm:py-4 md:py-5 rounded-full font-semibold text-base sm:text-lg md:text-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
               >
-                <FileText className="w-5 h-5" />
+                <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span>Whitepaper</span>
               </a>
             </div>

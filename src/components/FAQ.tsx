@@ -81,28 +81,28 @@ export const FAQ: React.FC = () => {
               >
                 <button
                   onClick={() => toggleFAQ(index)}
-                  className="w-full px-6 md:px-8 py-6 md:py-8 text-left flex items-center justify-between hover:bg-gray-50 rounded-2xl md:rounded-3xl transition-colors duration-200"
+                  className="w-full px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 text-left flex items-center justify-between hover:bg-gray-50 rounded-2xl md:rounded-3xl transition-colors duration-200"
                 >
-                  <div className="flex items-center space-x-4 md:space-x-6">
-                    <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <IconComponent className="w-6 h-6 text-orange-500" />
+                  <div className="flex items-center space-x-3 sm:space-x-4 md:space-x-6">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500" />
                     </div>
-                    <h3 className="text-lg md:text-xl font-semibold text-gray-900 pr-4">
+                    <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 pr-2 sm:pr-4">
                       {item.question}
                     </h3>
                   </div>
                   <div className="flex-shrink-0">
                     {isOpen ? (
-                      <ChevronUp className="w-6 h-6 text-gray-500" />
+                      <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500" />
                     ) : (
-                      <ChevronDown className="w-6 h-6 text-gray-500" />
+                      <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500" />
                     )}
                   </div>
                 </button>
                 
                 {isOpen && (
-                  <div className="px-6 md:px-8 pb-6 md:pb-8">
-                    <div className="ml-16 md:ml-18">
+                  <div className="px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 md:pb-8">
+                    <div className="ml-13 sm:ml-16 md:ml-18">
                       <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                         {item.answer}
                       </p>
@@ -117,17 +117,17 @@ export const FAQ: React.FC = () => {
         {/* Contact CTA */}
         <div className="mt-12 md:mt-16 text-center">
           <div className="bg-white rounded-2xl md:rounded-3xl p-8 md:p-12 border border-orange-200 shadow-xl">
-            <HelpCircle className="w-16 h-16 text-orange-500 mx-auto mb-6" />
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+            <HelpCircle className="w-12 h-12 sm:w-16 sm:h-16 text-orange-500 mx-auto mb-4 sm:mb-6" />
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
               Vous avez d'autres questions ?
             </h3>
-            <p className="text-gray-600 mb-8 text-base md:text-lg">
+            <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base md:text-lg">
               Notre équipe est là pour vous aider. N'hésitez pas à nous contacter.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
               <a 
                 href="mailto:contact@deflatinu.com"
-                className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 Nous contacter
               </a>
@@ -135,7 +135,7 @@ export const FAQ: React.FC = () => {
                 href="https://discord.gg/YkMpHR65"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="border border-gray-300 hover:border-gray-400 text-gray-700 px-8 py-4 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full sm:w-auto border border-gray-300 hover:border-gray-400 text-gray-700 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 Rejoindre Discord
               </a>
