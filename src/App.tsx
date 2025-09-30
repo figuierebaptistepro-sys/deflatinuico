@@ -9,7 +9,6 @@ import { Roadmap } from './components/Roadmap'
 import { FAQ } from './components/FAQ'
 import { Footer } from './components/Footer'
 import { FloatingBuyButton } from './components/FloatingBuyButton'
-import { AdminPanel } from './components/AdminPanel'
 import { useAccount } from 'wagmi'
 import { useAutoVerification } from './hooks/useAutoVerification'
 
@@ -36,7 +35,6 @@ function AppContent() {
       <FAQ />
       <Footer />
       <FloatingBuyButton />
-      <AdminPanel />
     </div>
   )
 }
