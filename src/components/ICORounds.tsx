@@ -87,6 +87,19 @@ export const ICORounds: React.FC = () => {
   const selectedRound = getRoundByNumber(selectedRoundNumber)
   const tokensToReceive = purchaseAmount && selectedRound ? Math.floor(parseFloat(purchaseAmount) / selectedRound.price) : 0
 
+  // Minimum investment amounts per round
+  const getMinimumAmount = (roundNumber: number): number => {
+    switch (roundNumber) {
+      case 1: return 200
+      case 2: return 150
+      case 3: return 100
+      case 4: return 10
+      default: return 10
+    }
+  }
+
+  const currentMinimum = selectedRound ? getMinimumAmount(selectedRound.round_number) : 10
+
   const handlePurchase = async () => {
     if (!isConnected || !address) {
       open()
@@ -111,8 +124,8 @@ export const ICORounds: React.FC = () => {
     }
 
     const usdAmount = parseFloat(purchaseAmount)
-    if (usdAmount < 10) {
-      alert('Montant minimum: $10')
+    if (usdAmount < currentMinimum) {
+      alert(`Montant minimum pour le Round ${selectedRound?.round_number}: $${currentMinimum}`)
       return
     }
 
@@ -427,7 +440,7 @@ export const ICORounds: React.FC = () => {
                {/* Quick Buy Buttons */}
                <div className="mb-4">
                  <div className="flex flex-wrap gap-2 mb-3">
-                   {[10, 25, 50, 100, 250, 500].map((amount) => (
+                   {[currentMinimum, currentMinimum * 2, currentMinimum * 5, currentMinimum * 10].filter((amount, index, arr) => arr.indexOf(amount) === index && amount <= 1000).map((amount) => (
                      <button
                        key={amount}
                        type="button"
@@ -447,12 +460,12 @@ export const ICORounds: React.FC = () => {
                     type="number"
                     value={purchaseAmount}
                     onChange={(e) => setPurchaseAmount(e.target.value)}
-                    placeholder="Minimum $10"
-                    min="10"
+                    placeholder={`Minimum $${currentMinimum}`}
+                    min={currentMinimum}
                     className="w-full pl-12 pr-4 py-4 md:py-5 border border-gray-300 rounded-xl md:rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-lg md:text-xl font-semibold"
                   />
                 </div>
-                <p className="text-gray-500 text-xs md:text-sm mt-2">Minimum purchase: $10</p>
+                <p className="text-gray-500 text-xs md:text-sm mt-2">Minimum purchase: ${currentMinimum}</p>
               </div>
 
               {/* ETH Amount Display */}
