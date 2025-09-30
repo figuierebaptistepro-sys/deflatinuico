@@ -121,13 +121,12 @@ const wagmiAdapter = new WagmiAdapter({
     [mainnet.id]: http(mainnetRpc),
     [sepolia.id]: http(sepoliaRpc),
   },
-  batch: {
-    multicall: false,
-  },
   connectors: [
     injected({ 
       shimDisconnect: true,
-      target: 'metaMask'
+      target() {
+        return 'metaMask'
+      }
     }),
     walletConnect({
       projectId,
@@ -157,32 +156,8 @@ export const modal = createAppKit({
   enableSwaps: false,
   enableEmail: false,
   enableSocials: false,
-  allowUnsafeOrigin: true,
   enableWalletFeatures: false,
-  // Configuration pour MetaMask et WalletConnect seulement
-  // Configuration simple et propre
-  includeWalletIds: [
-    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
-    '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0'  // WalletConnect
-  ],
-  excludeWalletIds: [
-    'c03dfee351b6fcc421b4494ea33b9d4b92a984f87aa76d1663bb28705e95034a', // Magic Eden
-    '18388be9ac2d02726dbac9777c96efaac06d744b2f6d580fccdd4127a6d01fd1', // Backpack
-    'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa', // Trust Wallet
-    '1ae92b26df02f0abca6304df07debccd18262fdf5fe82208e5168b733496a09c0', // Coinbase
-    '971e689d0a5be527bac79629b4ee9b925e82208e5168b733496a09c0faed0709', // Rainbow
-    '8a0ee50d1f22f6651afcae7eb4253e52a3310b90af5daef78a8c4929a9bb99d4', // Phantom
-    '19177a98252e07ddfc9af2083ba8e07ef627cb6103467ffebb3f8f4205fd7927', // Ledger Live
-    '225affb176778569276e484e1b92637ad061b01e13a048b35a9d280c3b58970f', // Safe
-    'bc949c5d968ae81310268bf9193f9c9fb7bb4e1283e1284af8f2bd4992535fd6', // TokenPocket
-    '20459438007b75f4f4acb98bf29aa3b800550309646d375da5fd4aac6c2a2c66', // Zerion
-    '38f5d18bd8522c244bdd70cb4a68e0e718865155811c043f052fb9f1c51de662'  // Bitget
-  ],
-  featuredWalletIds: [
-    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
-    '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0'  // WalletConnect
-  ],
-  allWallets: 'HIDE'
+  allWallets: 'SHOW'
 })
 
 export const queryClient = new QueryClient()
