@@ -341,7 +341,13 @@ export const ICORounds: React.FC = () => {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-3">
                     <div 
-                      className="bg-gradient-to-r from-orange-500 to-blue-500 h-3 rounded-full transition-all duration-1000 ease-out"
+                      className={`h-3 rounded-full transition-all duration-1000 ease-out ${
+                        round.status === 'active' 
+                          ? 'bg-gradient-to-r from-orange-500 to-blue-500' 
+                          : round.status === 'completed'
+                            ? 'bg-gradient-to-r from-green-500 to-blue-500'
+                            : 'bg-gray-400'
+                      }`}
                       style={{ width: `${getProgressPercentage(round)}%` }}
                     ></div>
                   </div>
