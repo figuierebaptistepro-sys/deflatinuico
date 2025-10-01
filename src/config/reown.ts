@@ -33,9 +33,12 @@ const mainnetRpc =
 const sepoliaRpc =
   sepoliaRpcRaw?.startsWith('http') ? sepoliaRpcRaw : 'https://ethereum-sepolia-rpc.publicnode.com'
 
+// Define validChains array
+const validChains = [mainnet, sepolia]
+
 // Configuration WagmiAdapter simple
 const wagmiAdapter = new WagmiAdapter({
-  chains: [mainnet, sepolia],
+  chains: validChains,
   projectId,
   ssr: false,
   transports: {
