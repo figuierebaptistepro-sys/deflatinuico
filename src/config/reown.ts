@@ -5,116 +5,67 @@ import { QueryClient } from '@tanstack/react-query'
 import { walletConnect, injected } from '@wagmi/connectors'
 import { http } from 'viem'
 
-// 🔧 VERIFICATION COMPLETE DES VARIABLES D'ENVIRONNEMENT
-console.log('='.repeat(80))
-console.log('🔍 VERIFICATION COMPLETE ALCHEMY')
-console.log('='.repeat(80))
+// 🔧 VERIF ENV (uniquement en DEV pour éviter les leaks)
+if (import.meta.env.DEV) {
+  console.log('='.repeat(80))
+  console.log('🔍 VERIFICATION COMPLETE ALCHEMY')
+  console.log('='.repeat(80))
+  console.log('📋 Variables d\'environnement brutes:')
+  console.log('- VITE_ALCHEMY_MAINNET_RPC_URL:', import.meta.env.VITE_ALCHEMY_MAINNET_RPC_URL)
+  console.log('- VITE_ALCHEMY_SEPOLIA_RPC_URL:', import.meta.env.VITE_ALCHEMY_SEPOLIA_RPC_URL)
+  console.log('- VITE_WALLETCONNECT_PROJECT_ID:', import.meta.env.VITE_WALLETCONNECT_PROJECT_ID)
+  const mainnetRpcRaw = import.meta.env.VITE_ALCHEMY_MAINNET_RPC_URL
+  const sepoliaRpcRaw = import.meta.env.VITE_ALCHEMY_SEPOLIA_RPC_URL
+  console.log('🔬 Analyse détaillée:')
+  console.log('- Type mainnet RPC:', typeof mainnetRpcRaw)
+  console.log('- Longueur mainnet RPC:', mainnetRpcRaw?.length || 0)
+  console.log('- Contient "alchemy":', /alchemy(api|\.com)/.test(mainnetRpcRaw || ''))
+  console.log('- Type sepolia RPC:', typeof sepoliaRpcRaw)
+  console.log('- Longueur sepolia RPC:', sepoliaRpcRaw?.length || 0)
+  console.log('- Contient "alchemy":', /alchemy(api|\.com)/.test(sepoliaRpcRaw || ''))
+  console.log('🌍 TOUTES les variables d\'environnement VITE_:')
+  Object.keys(import.meta.env).forEach(k => k.startsWith('VITE_') && console.log(`- ${k}:`, import.meta.env[k]))
+}
 
-// Vérification brute des variables
-console.log('📋 Variables d\'environnement brutes:')
-console.log('- VITE_ALCHEMY_MAINNET_RPC_URL:', import.meta.env.VITE_ALCHEMY_MAINNET_RPC_URL)
-console.log('- VITE_ALCHEMY_SEPOLIA_RPC_URL:', import.meta.env.VITE_ALCHEMY_SEPOLIA_RPC_URL)
-console.log('- VITE_WALLETCONNECT_PROJECT_ID:', import.meta.env.VITE_WALLETCONNECT_PROJECT_ID)
+// IDs / URLs
+const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
+if (!projectId) throw new Error('VITE_WALLETCONNECT_PROJECT_ID manquant (.env)')
 
-// Vérification du type et de la longueur
 const mainnetRpcRaw = import.meta.env.VITE_ALCHEMY_MAINNET_RPC_URL
 const sepoliaRpcRaw = import.meta.env.VITE_ALCHEMY_SEPOLIA_RPC_URL
 
-console.log('🔬 Analyse détaillée:')
-console.log('- Type mainnet RPC:', typeof mainnetRpcRaw)
-console.log('- Longueur mainnet RPC:', mainnetRpcRaw?.length || 0)
-console.log('- Contient "alchemyapi":', mainnetRpcRaw?.includes('alchemyapi') || false)
-console.log('- Type sepolia RPC:', typeof sepoliaRpcRaw)
-console.log('- Longueur sepolia RPC:', sepoliaRpcRaw?.length || 0)
-console.log('- Contient "alchemyapi":', sepoliaRpcRaw?.includes('alchemyapi') || false)
-
-// Affichage de toutes les variables d'environnement
-console.log('🌍 TOUTES les variables d\'environnement:')
-Object.keys(import.meta.env).forEach(key => {
-  if (key.startsWith('VITE_')) {
-    console.log(`- ${key}:`, import.meta.env[key])
-  }
-})
-
-// Get Reown Project ID from environment variables
-const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
-
-// Get base URL with intelligent fallback
 const getBaseUrl = (): string => {
-  // 1. Try environment variable first (for custom domains)
   const envBaseUrl = import.meta.env.VITE_PUBLIC_BASE_URL
-  if (envBaseUrl) {
-    console.log('✅ Using custom base URL from environment:', envBaseUrl)
-    return envBaseUrl
-  }
-  
-  // 2. Use current domain if available (works for bolt.host and any other domain)
-  if (typeof window !== 'undefined') {
-    console.log('✅ Using current domain:', window.location.origin)
-    return window.location.origin
-  }
-  
-  // 3. Fallback to bolt.host URL (for build time or server-side rendering)
-  const fallbackUrl = 'https://deflatinu.com'
-  console.log('⚠️ Using fallback URL:', fallbackUrl)
-  return fallbackUrl
+  if (envBaseUrl) return envBaseUrl
+  if (typeof window !== 'undefined') return window.location.origin
+  return 'https://deflatinu.com'
 }
-
 const baseUrl = getBaseUrl()
 
-if (!projectId) {
-  console.error('❌ ERREUR: VITE_WALLETCONNECT_PROJECT_ID manquant')
-  throw new Error('VITE_WALLETCONNECT_PROJECT_ID is required. Please add it to your .env file.')
-}
-
-// Application metadata
 const metadata = {
   name: 'DEFLAT INU ICO',
   description: 'Deflationary Token ICO Platform',
   url: baseUrl,
-  icons: [`${baseUrl}/vite.svg`]
+  icons: [`${baseUrl}/vite.svg`],
 }
 
-// Supported networks
-const networks = [mainnet, sepolia]
+// Fallbacks RPC si besoin
+const mainnetRpc =
+  mainnetRpcRaw?.startsWith('http') ? mainnetRpcRaw : 'https://eth.llamarpc.com'
+const sepoliaRpc =
+  sepoliaRpcRaw?.startsWith('http') ? sepoliaRpcRaw : 'https://ethereum-sepolia-rpc.publicnode.com'
 
-// RPC URLs avec fallbacks et vérification
-let mainnetRpc: string
-let sepoliaRpc: string
-
-if (mainnetRpcRaw && mainnetRpcRaw.startsWith('https://') && (mainnetRpcRaw.includes('alchemyapi.io') || mainnetRpcRaw.includes('alchemy.com'))) {
-  mainnetRpc = mainnetRpcRaw
-  console.log('✅ ALCHEMY MAINNET DETECTE:', mainnetRpc)
-} else if (mainnetRpcRaw && (mainnetRpcRaw.includes('alchemyapi.io') || mainnetRpcRaw.includes('alchemy.com')) && !mainnetRpcRaw.startsWith('https://')) {
-  mainnetRpc = `https://${mainnetRpcRaw}`
-  console.log('✅ ALCHEMY MAINNET CORRIGE:', mainnetRpc)
-} else {
-  mainnetRpc = 'https://eth.llamarpc.com'
-  console.log('⚠️ FALLBACK MAINNET RPC:', mainnetRpc)
-  console.log('   Raison: Variable manquante ou invalide')
+if (import.meta.env.DEV) {
+  console.log('🌐 Configuration RPC finale:')
+  console.log('- Mainnet RPC:', mainnetRpc)
+  console.log('- Mainnet utilise Alchemy:', /alchemy(api|\.com)/.test(mainnetRpc) ? '✅ OUI' : '❌ NON')
+  console.log('- Sepolia RPC:', sepoliaRpc)
+  console.log('- Sepolia utilise Alchemy:', /alchemy(api|\.com)/.test(sepoliaRpc) ? '✅ OUI' : '❌ NON')
 }
 
-if (sepoliaRpcRaw && sepoliaRpcRaw.startsWith('https://') && (sepoliaRpcRaw.includes('alchemyapi.io') || sepoliaRpcRaw.includes('alchemy.com'))) {
-  sepoliaRpc = sepoliaRpcRaw
-  console.log('✅ ALCHEMY SEPOLIA DETECTE:', sepoliaRpc)
-} else if (sepoliaRpcRaw && (sepoliaRpcRaw.includes('alchemyapi.io') || sepoliaRpcRaw.includes('alchemy.com')) && !sepoliaRpcRaw.startsWith('https://')) {
-  sepoliaRpc = `https://${sepoliaRpcRaw}`
-  console.log('✅ ALCHEMY SEPOLIA CORRIGE:', sepoliaRpc)
-} else {
-  sepoliaRpc = 'https://ethereum-sepolia-rpc.publicnode.com'
-  console.log('⚠️ FALLBACK SEPOLIA RPC:', sepoliaRpc)
-  console.log('   Raison: Variable manquante ou invalide')
-}
-
-console.log('🌐 Configuration RPC finale:')
-console.log('- Mainnet RPC:', mainnetRpc)
-console.log('- Mainnet utilise Alchemy:', (mainnetRpc.includes('alchemyapi.io') || mainnetRpc.includes('alchemy.com')) ? '✅ OUI' : '❌ NON')
-console.log('- Sepolia RPC:', sepoliaRpc)
-console.log('- Sepolia utilise Alchemy:', (sepoliaRpc.includes('alchemyapi.io') || sepoliaRpc.includes('alchemy.com')) ? '✅ OUI' : '❌ NON')
-
-// Create Wagmi Adapter with ONLY MetaMask and WalletConnect
+// ✅ WagmiAdapter avec **chains** + 2 connecteurs uniquement
 const wagmiAdapter = new WagmiAdapter({
-  networks,
+  chains: [mainnet, sepolia],
   projectId,
   ssr: false,
   transports: {
@@ -122,60 +73,32 @@ const wagmiAdapter = new WagmiAdapter({
     [sepolia.id]: http(sepoliaRpc),
   },
   connectors: [
-    injected({ 
-      shimDisconnect: true,
-      target: 'metaMask'
-    }),
-    walletConnect({
-      projectId,
-      metadata,
-      showQrModal: false
-    })
-  ]
+    injected({ shimDisconnect: true }), // MetaMask et autres wallets injectés
+    walletConnect({ projectId, metadata, showQrModal: false }), // WalletConnect
+  ],
 })
 
-console.log('✅ Wagmi Adapter créé avec succès - SEULEMENT MetaMask et WalletConnect')
-console.log('='.repeat(80))
-
-// Create AppKit modal with STRICT wallet limitation
+// ✅ AppKit minimal — pas d'explorer/reco
 export const modal = createAppKit({
   adapters: [wagmiAdapter],
-  networks,
+  chains: [mainnet, sepolia],
   projectId,
   metadata,
+  // Si ta version le supporte et que des "recommended wallets" apparaissent quand même :
+  // enableWalletExplorer: false,
+  features: { email: false, socials: false },
   themeMode: 'light',
   themeVariables: {
     '--w3m-accent': '#f97316',
     '--w3m-border-radius-master': '12px',
-    '--w3m-font-family': 'Inter, sans-serif'
+    '--w3m-font-family': 'Inter, sans-serif',
   },
-  // DISABLE ALL EXTRA FEATURES
-  enableAnalytics: false,
-  enableOnramp: false,
-  enableSwaps: false,
-  enableEmail: false,
-  enableSocials: false,
-  enableWalletFeatures: false,
-  // STRICT WALLET CONTROL - ONLY MetaMask and WalletConnect
-  includeWalletIds: [
-    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
-    '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0'  // WalletConnect
-  ],
-  excludeWalletIds: [
-    'c03dfee351b6fcc421b4494ea33b9d4b92a984f87aa76d1663bb28705e95034a', // Magic Eden
-    '18388be9ac2d02726dbac9777c96efaac06d744b2f6d580fccdd4127a6d01fd1', // Backpack
-    'ecc4036f814562b41a5268adc86270fba1365471402006302e70169465b7ac18', // Zerion
-    '19177a98252e07ddfc9af2083ba8e07ef627cb6103467ffebb3f8f4205fd7927', // Ledger Live
-    '1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369', // Rainbow
-    'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa', // Coinbase Wallet
-    '225affb176778569276e484e1b92637ad061b01e13a048b35a9d280c3b58970f', // Safe
-    '38f5d18bd8522c244bdd70cb4a68e0e718865155811c043f052fb9f1c51de662'  // Bitget
-  ],
-  featuredWalletIds: [
-    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask en premier
-    '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0'  // WalletConnect en second
-  ]
 })
+
+if (import.meta.env.DEV) {
+  console.log('✅ Wagmi Adapter créé avec succès - SEULEMENT MetaMask (injected) et WalletConnect')
+  console.log('='.repeat(80))
+}
 
 export const queryClient = new QueryClient()
 export const config = wagmiAdapter.wagmiConfig
