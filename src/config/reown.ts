@@ -2,7 +2,7 @@ import { createAppKit } from '@reown/appkit/react'
 import { mainnet, sepolia } from 'viem/chains'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { QueryClient } from '@tanstack/react-query'
-import { walletConnect, injected, coinbaseWallet } from '@wagmi/connectors'
+import { walletConnect, injected } from '@wagmi/connectors'
 import { http } from 'viem'
 
 // 🔧 VERIFICATION COMPLETE DES VARIABLES D'ENVIRONNEMENT
@@ -112,7 +112,7 @@ console.log('- Mainnet utilise Alchemy:', (mainnetRpc.includes('alchemyapi.io') 
 console.log('- Sepolia RPC:', sepoliaRpc)
 console.log('- Sepolia utilise Alchemy:', (sepoliaRpc.includes('alchemyapi.io') || sepoliaRpc.includes('alchemy.com')) ? '✅ OUI' : '❌ NON')
 
-// Create Wagmi Adapter with explicit connectors
+// Create Wagmi Adapter with ONLY MetaMask and WalletConnect
 const wagmiAdapter = new WagmiAdapter({
   networks,
   projectId,
@@ -124,9 +124,7 @@ const wagmiAdapter = new WagmiAdapter({
   connectors: [
     injected({ 
       shimDisconnect: true,
-      target() {
-        return 'metaMask'
-      }
+      target: 'metaMask'
     }),
     walletConnect({
       projectId,
@@ -136,10 +134,10 @@ const wagmiAdapter = new WagmiAdapter({
   ]
 })
 
-console.log('✅ Wagmi Adapter créé avec succès')
+console.log('✅ Wagmi Adapter créé avec succès - SEULEMENT MetaMask et WalletConnect')
 console.log('='.repeat(80))
 
-// Create AppKit modal with better configuration
+// Create AppKit modal with STRICT wallet limitation
 export const modal = createAppKit({
   adapters: [wagmiAdapter],
   networks,
@@ -151,13 +149,32 @@ export const modal = createAppKit({
     '--w3m-border-radius-master': '12px',
     '--w3m-font-family': 'Inter, sans-serif'
   },
+  // DISABLE ALL EXTRA FEATURES
   enableAnalytics: false,
   enableOnramp: false,
   enableSwaps: false,
   enableEmail: false,
   enableSocials: false,
   enableWalletFeatures: false,
-  allWallets: 'SHOW'
+  // STRICT WALLET CONTROL - ONLY MetaMask and WalletConnect
+  includeWalletIds: [
+    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
+    '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0'  // WalletConnect
+  ],
+  excludeWalletIds: [
+    'c03dfee351b6fcc421b4494ea33b9d4b92a984f87aa76d1663bb28705e95034a', // Magic Eden
+    '18388be9ac2d02726dbac9777c96efaac06d744b2f6d580fccdd4127a6d01fd1', // Backpack
+    'ecc4036f814562b41a5268adc86270fba1365471402006302e70169465b7ac18', // Zerion
+    '19177a98252e07ddfc9af2083ba8e07ef627cb6103467ffebb3f8f4205fd7927', // Ledger Live
+    '1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369', // Rainbow
+    'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa', // Coinbase Wallet
+    '225affb176778569276e484e1b92637ad061b01e13a048b35a9d280c3b58970f', // Safe
+    '38f5d18bd8522c244bdd70cb4a68e0e718865155811c043f052fb9f1c51de662'  // Bitget
+  ],
+  featuredWalletIds: [
+    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask en premier
+    '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0'  // WalletConnect en second
+  ]
 })
 
 export const queryClient = new QueryClient()
