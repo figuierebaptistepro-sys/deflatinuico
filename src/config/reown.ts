@@ -9,7 +9,6 @@ const networks = [mainnet, sepolia] as const // ✅ OBLIGATOIRE pour AppKit
 
 // IDs officiels Reown
 const METAMASK_ID = 'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96'
-const WALLETCONNECT_ID = '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'DEV_PLACEHOLDER'
 const MAINNET_RPC = import.meta.env.VITE_ALCHEMY_MAINNET_RPC_URL || 'https://eth.llamarpc.com'
@@ -37,11 +36,10 @@ createAppKit({
 
   // coupe les features annexes
   features: { email: false, socials: false },
-  enableWalletExplorer: false,   // ✅ coupe le catalogue 470+
+  enableWalletExplorer: false,              // coupe le catalogue
 
-  // 🔒 Whitelist stricte = n'affiche QUE ceux-là
-  includeWalletIds: [METAMASK_ID, WALLETCONNECT_ID],
-  featuredWalletIds: [METAMASK_ID, WALLETCONNECT_ID],
+  includeWalletIds: [METAMASK_ID],          // ✅ seulement MetaMask
+  featuredWalletIds: [METAMASK_ID],         // (optionnel) le mettre en haut
 })
 
 export const config = wagmi.wagmiConfig
