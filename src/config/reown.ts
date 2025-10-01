@@ -1,6 +1,6 @@
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { injected, walletConnect } from '@wagmi/connectors'
+import { metaMask, walletConnect } from '@wagmi/connectors'
 import { mainnet, sepolia } from 'viem/chains'
 import { http } from 'viem'
 import { QueryClient } from '@tanstack/react-query'
@@ -20,7 +20,7 @@ const wagmi = new WagmiAdapter({
     [sepolia.id]: http(SEPOLIA_RPC),
   },
   connectors: [
-    injected({ shimDisconnect: true }),
+    metaMask({ shimDisconnect: true }),                 // ✅ MetaMask uniquement
     walletConnect({ projectId, showQrModal: false }),
   ],
 })
@@ -31,6 +31,7 @@ createAppKit({
   networks,                                 // ✅ sinon extendCaipNetworks(...).map crash
   projectId,
   features: { email: false, socials: false },
+  enableWalletExplorer: false,   // ✅ coupe le catalogue 470+
 })
 
 export const config = wagmi.wagmiConfig
