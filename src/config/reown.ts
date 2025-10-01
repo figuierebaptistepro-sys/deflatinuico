@@ -5,28 +5,6 @@ import { QueryClient } from '@tanstack/react-query'
 import { walletConnect, injected } from '@wagmi/connectors'
 import { http } from 'viem'
 
-// 🔧 VERIF ENV (uniquement en DEV pour éviter les leaks)
-if (import.meta.env.DEV) {
-  console.log('='.repeat(80))
-  console.log('🔍 VERIFICATION COMPLETE ALCHEMY')
-  console.log('='.repeat(80))
-  console.log('📋 Variables d\'environnement brutes:')
-  console.log('- VITE_ALCHEMY_MAINNET_RPC_URL:', import.meta.env.VITE_ALCHEMY_MAINNET_RPC_URL)
-  console.log('- VITE_ALCHEMY_SEPOLIA_RPC_URL:', import.meta.env.VITE_ALCHEMY_SEPOLIA_RPC_URL)
-  console.log('- VITE_WALLETCONNECT_PROJECT_ID:', import.meta.env.VITE_WALLETCONNECT_PROJECT_ID)
-  const mainnetRpcRaw = import.meta.env.VITE_ALCHEMY_MAINNET_RPC_URL
-  const sepoliaRpcRaw = import.meta.env.VITE_ALCHEMY_SEPOLIA_RPC_URL
-  console.log('🔬 Analyse détaillée:')
-  console.log('- Type mainnet RPC:', typeof mainnetRpcRaw)
-  console.log('- Longueur mainnet RPC:', mainnetRpcRaw?.length || 0)
-  console.log('- Contient "alchemy":', /alchemy(api|\.com)/.test(mainnetRpcRaw || ''))
-  console.log('- Type sepolia RPC:', typeof sepoliaRpcRaw)
-  console.log('- Longueur sepolia RPC:', sepoliaRpcRaw?.length || 0)
-  console.log('- Contient "alchemy":', /alchemy(api|\.com)/.test(sepoliaRpcRaw || ''))
-  console.log('🌍 TOUTES les variables d\'environnement VITE_:')
-  Object.keys(import.meta.env).forEach(k => k.startsWith('VITE_') && console.log(`- ${k}:`, import.meta.env[k]))
-}
-
 // IDs / URLs
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 if (!projectId) throw new Error('VITE_WALLETCONNECT_PROJECT_ID manquant (.env)')
@@ -55,31 +33,15 @@ const mainnetRpc =
 const sepoliaRpc =
   sepoliaRpcRaw?.startsWith('http') ? sepoliaRpcRaw : 'https://ethereum-sepolia-rpc.publicnode.com'
 
-// ✅ Validation des chains pour éviter l'erreur undefined.map()
-const validChains = [mainnet, sepolia].filter(Boolean)
-if (validChains.length === 0) {
-  throw new Error('Aucune chain valide trouvée - vérifiez les imports viem/chains')
-}
-
-// ✅ Transports sécurisés basés sur les chains valides
-const transports: Record<number, any> = {}
-if (mainnet) transports[mainnet.id] = http(mainnetRpc)
-if (sepolia) transports[sepolia.id] = http(sepoliaRpc)
-
-if (import.meta.env.DEV) {
-  console.log('🌐 Configuration RPC finale:')
-  console.log('- Mainnet RPC:', mainnetRpc)
-  console.log('- Mainnet utilise Alchemy:', /alchemy(api|\.com)/.test(mainnetRpc) ? '✅ OUI' : '❌ NON')
-  console.log('- Sepolia RPC:', sepoliaRpc)
-  console.log('- Sepolia utilise Alchemy:', /alchemy(api|\.com)/.test(sepoliaRpc) ? '✅ OUI' : '❌ NON')
-}
-
-// ✅ WagmiAdapter avec **chains** + 2 connecteurs uniquement
+// Configuration WagmiAdapter simple
 const wagmiAdapter = new WagmiAdapter({
-  chains: validChains,
+  chains: [mainnet, sepolia],
   projectId,
   ssr: false,
-  transports,
+  transports: {
+    [mainnet.id]: http(mainnetRpc),
+    [sepolia.id]: http(sepoliaRpc),
+  },
   connectors: [
     injected({ shimDisconnect: true }), // MetaMask et autres wallets injectés
     walletConnect({ projectId, metadata, showQrModal: false }), // WalletConnect
@@ -91,7 +53,6 @@ export const modal = createAppKit({
   adapters: [wagmiAdapter],
   chains: validChains,
   projectId,
-  metadata,
   // Si ta version le supporte et que des "recommended wallets" apparaissent quand même :
   // enableWalletExplorer: false,
   features: { email: false, socials: false },
@@ -102,11 +63,6 @@ export const modal = createAppKit({
     '--w3m-font-family': 'Inter, sans-serif',
   },
 })
-
-if (import.meta.env.DEV) {
-  console.log('✅ Wagmi Adapter créé avec succès - SEULEMENT MetaMask (injected) et WalletConnect')
-  console.log('='.repeat(80))
-}
 
 export const queryClient = new QueryClient()
 export const config = wagmiAdapter.wagmiConfig
