@@ -14,58 +14,58 @@ export const Roadmap: React.FC = () => {
   const roadmapData: RoadmapItem[] = [
     {
       phase: "Phase 1",
-      title: "Launch & ICO",
+      title: "Lancement & ICO Round 1",
       status: "active",
-      date: "Q1 2025",
+      date: "Q4 2025",
       icon: Rocket,
       items: [
-        "Deflationary smart contract development",
-        "Security audit by blockchain experts",
-        "Launch ICO in 4 progressive rounds",
-        "Implementation of progressive tax system",
-        "Automatic buyback interface"
+        "Création des réseaux sociaux officiels",
+        "Développement et lancement du site internet",
+        "Audit de sécurité par des experts blockchain",
+        "Lancement de l'ICO Round 1",
+        "Implémentation du système de taxes progressives"
       ]
     },
     {
       phase: "Phase 2", 
-      title: "Listing & Community",
+      title: "ICO Rounds 2-4 & Communauté",
       status: "upcoming",
-      date: "Q2 2025",
+      date: "Q1 2026",
       icon: Users,
       items: [
-        "DEX listing (Uniswap, PancakeSwap)",
-        "Aggressive marketing campaign",
-        "Partnerships with crypto influencers",
-        "Airdrops for early adopter community",
-        "Governance dashboard development"
+        "Lancement des ICO Rounds 2, 3 et 4",
+        "Développement intensif des réseaux sociaux",
+        "Campagne marketing agressive",
+        "Partenariats avec des influenceurs crypto",
+        "Airdrops pour la communauté early adopters"
       ]
     },
     {
       phase: "Phase 3",
-      title: "Expansion & Utility",
+      title: "Distribution & Listing DEX",
       status: "upcoming", 
-      date: "Q3 2025",
+      date: "Q2 2026",
       icon: TrendingUp,
       items: [
-        "Centralized exchange listings (CEX)",
-        "DEFLAT INU staking launch",
-        "Long-term holder rewards program",
-        "DeFi ecosystem integration",
-        "Strategic partnerships with other projects"
+        "Distribution officielle du token DEFLAT INU",
+        "Listing sur DEX (Uniswap, PancakeSwap)",
+        "Activation du système de buyback automatique",
+        "Mise en place des mécanismes déflationnistes",
+        "Programme de récompenses pour les holders long terme"
       ]
     },
     {
       phase: "Phase 4",
-      title: "Global Ecosystem",
+      title: "Écosystème & Utilités",
       status: "upcoming",
-      date: "Q4 2025",
+      date: "Q3 2026",
       icon: Globe,
       items: [
-        "DEFLAT INU DAO launch",
-        "NFT marketplace with holder discounts",
-        "Multi-chain bridge (ETH, BSC, MATIC)",
-        "Mobile trading application",
-        "International expansion and regulatory compliance"
+        "Lancement du staking stablecoins avec les premières taxes",
+        "Création d'une pool de liquidité dédiée",
+        "Développement de goodies de marque avec système de burn",
+        "Mise en place d'une loterie exclusive pour les holders",
+        "Développement d'un jeu intégré à l'écosystème DEFLAT INU"
       ]
     }
   ]
