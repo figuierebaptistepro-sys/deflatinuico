@@ -32,6 +32,7 @@ createAppKit({
   projectId,
   features: { email: false, socials: false },
   enableWalletExplorer: false,   // ✅ coupe le catalogue 470+
+  enableWalletExplorer: false,   // ✅ coupe le catalogue 470+
 })
 
 export const config = wagmi.wagmiConfig
