@@ -1,5 +1,7 @@
 import React from 'react'
-import { WalletProvider } from './components/WalletProvider'
+import { WagmiProvider } from 'wagmi'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { config, queryClient } from './config/reown'
 import { Header } from './components/Header'
 import { Hero } from './components/Hero'
 import { ICORounds } from './components/ICORounds'
@@ -45,9 +47,11 @@ function AppContent() {
 
 function App() {
   return (
-    <WalletProvider>
-      <AppContent />
-    </WalletProvider>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <AppContent />
+      </QueryClientProvider>
+    </WagmiProvider>
   )
 }
 
