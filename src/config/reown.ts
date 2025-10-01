@@ -55,6 +55,17 @@ const mainnetRpc =
 const sepoliaRpc =
   sepoliaRpcRaw?.startsWith('http') ? sepoliaRpcRaw : 'https://ethereum-sepolia-rpc.publicnode.com'
 
+// ✅ Validation des chains pour éviter l'erreur undefined.map()
+const validChains = [mainnet, sepolia].filter(Boolean)
+if (validChains.length === 0) {
+  throw new Error('Aucune chain valide trouvée - vérifiez les imports viem/chains')
+}
+
+// ✅ Transports sécurisés basés sur les chains valides
+const transports: Record<number, any> = {}
+if (mainnet) transports[mainnet.id] = http(mainnetRpc)
+if (sepolia) transports[sepolia.id] = http(sepoliaRpc)
+
 if (import.meta.env.DEV) {
   console.log('🌐 Configuration RPC finale:')
   console.log('- Mainnet RPC:', mainnetRpc)
@@ -65,13 +76,10 @@ if (import.meta.env.DEV) {
 
 // ✅ WagmiAdapter avec **chains** + 2 connecteurs uniquement
 const wagmiAdapter = new WagmiAdapter({
-  chains: [mainnet, sepolia],
+  chains: validChains,
   projectId,
   ssr: false,
-  transports: {
-    [mainnet.id]: http(mainnetRpc),
-    [sepolia.id]: http(sepoliaRpc),
-  },
+  transports,
   connectors: [
     injected({ shimDisconnect: true }), // MetaMask et autres wallets injectés
     walletConnect({ projectId, metadata, showQrModal: false }), // WalletConnect
@@ -81,7 +89,7 @@ const wagmiAdapter = new WagmiAdapter({
 // ✅ AppKit minimal — pas d'explorer/reco
 export const modal = createAppKit({
   adapters: [wagmiAdapter],
-  chains: [mainnet, sepolia],
+  chains: validChains,
   projectId,
   metadata,
   // Si ta version le supporte et que des "recommended wallets" apparaissent quand même :
