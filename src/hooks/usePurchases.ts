@@ -79,7 +79,8 @@ export const usePurchases = () => {
       const { data, error } = await supabase
         .from('purchases')
         .select('*')
-        .eq('user_wallet_address', normalizedAddress) // ✅ lowercase
+        // ⬇️ CHANGEMENT ICI : ilike pour ignorer la casse et retrouver l'historique
+        .ilike('user_wallet_address', address as string)
         .order('created_at', { ascending: false })
 
       if (error) {
@@ -207,6 +208,7 @@ export const usePurchases = () => {
       let tokenPrice: number
       if (roundError || !roundData) {
         console.error('❌ [BALANCE DEBUG] Erreur récupération prix round:', roundError)
+        // Fallback si la table n’a pas de prix
         const roundPrices = [0.0022, 0.0055, 0.0077, 0.011]
         tokenPrice = roundPrices[icoRound - 1] || roundPrices[0]
         console.log('⚠️ [BALANCE DEBUG] Utilisation prix fallback:', tokenPrice)
@@ -267,6 +269,7 @@ export const usePurchases = () => {
 
         if (updateError) {
           console.error('⚠️ [BALANCE DEBUG] Erreur mise à jour sold_tokens:', updateError)
+          // non bloquant
         } else {
           console.log('✅ [BALANCE DEBUG] Sold tokens mis à jour avec succès')
         }
