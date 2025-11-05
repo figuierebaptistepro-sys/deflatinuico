@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi'
-import { parseEther, formatEther } from 'viem'
+import { parseEther } from 'viem'
 import { useAppKit } from '@reown/appkit/react'
 import { 
   Shield, 
@@ -30,8 +30,8 @@ export const ICORounds: React.FC = () => {
   const { open } = useAppKit()
   const { processTransaction } = usePurchases()
   const { addToVerificationQueue } = useAutoVerification()
-  const { status: txStatus, track: trackTransaction } = useTxStatus()
-  const { rounds, loading: roundsLoading, error: roundsError, activeRound, getRoundByNumber, activateRound, completeRound, resetRound } = useICORounds()
+  const { status: txStatus } = useTxStatus()
+  const { rounds, loading: roundsLoading, error: roundsError, activeRound, getRoundByNumber } = useICORounds()
   const { status: icoStatus } = useICOStatus()
   const { 
     ethPrice, 
@@ -62,9 +62,11 @@ export const ICORounds: React.FC = () => {
     isLoading: isConfirming, 
     isSuccess: isConfirmed,
     error: confirmError
-  } = useWaitForTransactionReceipt({
-    hash,
-  })
+  } = useWaitForTransactionReceipt({ hash })
+
+  // ---- TEST ONLY: forcer un minimum à 1$ (revert facile) ----
+  const TEST_MIN_OVERRIDE = 1 as const
+  // -----------------------------------------------------------
 
   // Set initial selected round to active round when rounds are loaded
   useEffect(() => {
@@ -77,28 +79,27 @@ export const ICORounds: React.FC = () => {
   useEffect(() => {
     if (purchaseAmount && ethPrice) {
       const usdAmount = parseFloat(purchaseAmount)
-      const ethRequired = calculateEthAmount(usdAmount)
-      setEthAmount(ethRequired)
+      if (!isNaN(usdAmount) && usdAmount > 0) {
+        const ethRequired = calculateEthAmount(usdAmount)
+        setEthAmount(ethRequired)
+      } else {
+        setEthAmount('')
+      }
     } else {
       setEthAmount('')
     }
   }, [purchaseAmount, ethPrice, calculateEthAmount])
 
   const selectedRound = getRoundByNumber(selectedRoundNumber)
-  const tokensToReceive = purchaseAmount && selectedRound ? Math.floor(parseFloat(purchaseAmount) / selectedRound.price) : 0
+  const tokensToReceive =
+    purchaseAmount && selectedRound
+      ? Math.floor(parseFloat(purchaseAmount) / selectedRound.price)
+      : 0
 
-  // Minimum investment amounts per round
-  const getMinimumAmount = (roundNumber: number): number => {
-    switch (roundNumber) {
-      case 1: return 200
-      case 2: return 150
-      case 3: return 100
-      case 4: return 10
-      default: return 10
-    }
-  }
+  // Minimum d’investissement (test: 1$ pour tous les rounds)
+  const getMinimumAmount = (_roundNumber: number): number => TEST_MIN_OVERRIDE
 
-  const currentMinimum = selectedRound ? getMinimumAmount(selectedRound.round_number) : 10
+  const currentMinimum = selectedRound ? getMinimumAmount(selectedRound.round_number) : TEST_MIN_OVERRIDE
 
   const handlePurchase = async () => {
     if (!isConnected || !address) {
@@ -114,7 +115,6 @@ export const ICORounds: React.FC = () => {
 
     // Vérifier que le prix ETH est récent
     if (!isPriceRecent()) {
-      console.log('⚠️ [ETH PRICE] Price is outdated, refreshing...')
       await refreshPrice()
     }
 
@@ -124,33 +124,20 @@ export const ICORounds: React.FC = () => {
     }
 
     const usdAmount = parseFloat(purchaseAmount)
-    if (usdAmount < currentMinimum) {
+    if (isNaN(usdAmount) || usdAmount < currentMinimum) {
       alert(`Montant minimum pour le Round ${selectedRound?.round_number}: $${currentMinimum}`)
       return
     }
 
-    console.log('💰 Données avant transaction:', {
-      purchaseAmount,
-      usdAmount,
-      selectedRoundNumber,
-      ethPrice,
-      ethAmount
-    })
     setIsProcessing(true)
     resetSend()
 
     try {
       const ethValue = parseEther(ethAmount)
-      
-      // Adresse différente selon le réseau
       const recipientAddress = '0xEd6080e5652B522174FA5b0cC6C5EA44FacAFF02'
-      
-      await sendTransaction({
-        to: recipientAddress,
-        value: ethValue,
-      })
+      await sendTransaction({ to: recipientAddress, value: ethValue })
     } catch (error) {
-      console.error('Erreur lors de l\'envoi:', error)
+      console.error('Erreur lors de l’envoi:', error)
       setIsProcessing(false)
     }
   }
@@ -159,39 +146,18 @@ export const ICORounds: React.FC = () => {
   useEffect(() => {
     if (isConfirmed && hash && ethPrice && purchaseAmount) {
       const usdAmount = parseFloat(purchaseAmount)
-      
-      // Vérifier que le montant est valide
       if (isNaN(usdAmount) || usdAmount <= 0) {
-        console.error('❌ [BALANCE DEBUG] Montant USD invalide lors de la confirmation:', usdAmount)
         setIsProcessing(false)
         return
       }
-      
-      console.log('✅ [BALANCE DEBUG] Transaction confirmée par wagmi:', hash)
-      console.log('💰 [BALANCE DEBUG] Données pour vérification:', {
-        hash,
-        usdAmount,
-        selectedRoundNumber,
-        ethPrice
-      })
-      
-      // Traitement immédiat de la transaction avec les bonnes valeurs
-      console.log('🚀 [BALANCE DEBUG] Ajout à la file de vérification...')
-      addToVerificationQueue(
-        hash,
-        usdAmount,
-        selectedRoundNumber,
-        ethPrice
-      )
-      console.log('✅ [BALANCE DEBUG] Ajouté à la file de vérification')
-      
-      // Reset form après un délai pour éviter les problèmes de timing
+
+      addToVerificationQueue(hash, usdAmount, selectedRoundNumber, ethPrice)
+
+      // Reset léger
       setTimeout(() => {
-        console.log('🔄 [BALANCE DEBUG] Reset du formulaire...')
         setPurchaseAmount('')
         setEthAmount('')
         setIsProcessing(false)
-        console.log('✅ [BALANCE DEBUG] Formulaire reseté')
         alert('Transaction confirmée! Vérification en cours...')
       }, 100)
     }
@@ -206,11 +172,9 @@ export const ICORounds: React.FC = () => {
   }, [sendError, confirmError])
 
   const getProgressPercentage = (round: ICORound) => {
-    if (!round.total_tokens || round.total_tokens === 0) {
-      return 0
-    }
+    if (!round.total_tokens || round.total_tokens === 0) return 0
     const percentage = (round.sold_tokens / round.total_tokens) * 100
-    return Math.min(Math.max(percentage, 0), 100) // Ensure between 0 and 100
+    return Math.min(Math.max(percentage, 0), 100)
   }
 
   const getStatusColor = (status: string) => {
@@ -286,7 +250,6 @@ export const ICORounds: React.FC = () => {
           {/* ICO Rounds List */}
           <div className="space-y-6">
             <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">Available Rounds</h3>
-            
             {rounds.map((round) => (
               <div 
                 key={round.id}
@@ -347,7 +310,7 @@ export const ICORounds: React.FC = () => {
                           : 'bg-gray-400'
                       }`}
                       style={{ width: `${getProgressPercentage(round)}%` }}
-                    ></div>
+                    />
                   </div>
                   <div className="flex justify-between text-xs md:text-sm text-gray-500 mt-2">
                     <span>{round.sold_tokens.toLocaleString()} sold</span>
@@ -452,7 +415,9 @@ export const ICORounds: React.FC = () => {
                {/* Quick Buy Buttons */}
                <div className="mb-4">
                  <div className="flex flex-wrap gap-2 mb-3">
-                   {[currentMinimum, currentMinimum * 2, currentMinimum * 5, currentMinimum * 10].filter((amount, index, arr) => arr.indexOf(amount) === index && amount <= 1000).map((amount) => (
+                   {[currentMinimum, currentMinimum * 2, currentMinimum * 5, currentMinimum * 10]
+                     .filter((amount, index, arr) => arr.indexOf(amount) === index && amount <= 1000)
+                     .map((amount) => (
                      <button
                        key={amount}
                        type="button"
@@ -499,7 +464,15 @@ export const ICORounds: React.FC = () => {
               {/* Purchase Button */}
               <button
                 onClick={handlePurchase}
-                disabled={!selectedRound || selectedRound.status !== 'active' || isProcessing || isSending || isConfirming || !purchaseAmount || icoStatus?.ico_finished}
+                disabled={
+                  !selectedRound ||
+                  selectedRound.status !== 'active' ||
+                  isProcessing ||
+                  isSending ||
+                  isConfirming ||
+                  !purchaseAmount ||
+                  icoStatus?.ico_finished
+                }
                 className={`w-full py-4 md:py-5 rounded-xl md:rounded-2xl font-semibold text-lg md:text-xl transition-all duration-200 flex items-center justify-center space-x-3 ${
                   !selectedRound || selectedRound.status !== 'active' || isProcessing || isSending || isConfirming || !purchaseAmount || icoStatus?.ico_finished
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -558,7 +531,7 @@ export const ICORounds: React.FC = () => {
                   )}
                 </div>
               )}
-              {/* Transaction Status */}
+
               {(sendError || confirmError) && (
                 <div className="bg-red-50 border border-red-200 rounded-xl p-4 md:p-6">
                   <div className="flex items-center space-x-3">
