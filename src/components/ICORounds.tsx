@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react'
 import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi'
 import { parseEther, formatEther } from 'viem'
 import { useAppKit } from '@reown/appkit/react'
-import { 
-  Shield, 
-  TrendingUp, 
-  Clock, 
-  CheckCircle, 
-  AlertCircle, 
+import {
+  Shield,
+  TrendingUp,
+  Clock,
+  CheckCircle,
+  AlertCircle,
   Wallet,
   DollarSign,
   Coins,
   ArrowRight,
   Info,
-  Zap
+  Zap,
 } from 'lucide-react'
 import { usePurchases } from '../hooks/usePurchases'
 import { useAutoVerification } from '../hooks/useAutoVerification'
@@ -31,37 +31,50 @@ export const ICORounds: React.FC = () => {
   const { processTransaction } = usePurchases()
   const { addToVerificationQueue } = useAutoVerification()
   const { status: txStatus, track: trackTransaction } = useTxStatus()
-  const { rounds, loading: roundsLoading, error: roundsError, activeRound, getRoundByNumber, activateRound, completeRound, resetRound } = useICORounds()
+  const {
+    rounds,
+    loading: roundsLoading,
+    error: roundsError,
+    activeRound,
+    getRoundByNumber,
+    activateRound,
+    completeRound,
+    resetRound,
+  } = useICORounds()
   const { status: icoStatus } = useICOStatus()
-  const { 
-    ethPrice, 
-    loading: ethPriceLoading, 
+  const {
+    ethPrice,
+    loading: ethPriceLoading,
     error: ethPriceError,
     source: ethPriceSource,
     lastUpdated,
     refreshPrice,
     calculateEthAmount,
-    isPriceRecent
+    isPriceRecent,
   } = useEthPrice()
-  
+
   const [selectedRoundNumber, setSelectedRoundNumber] = useState(1)
   const [purchaseAmount, setPurchaseAmount] = useState('')
   const [ethAmount, setEthAmount] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
 
+  // ✅ PHASE 2: minimum = $20 pour tous les rounds
+  const PHASE2_MIN_USD = 20
+  const getMinimumAmount = (_roundNumber: number): number => PHASE2_MIN_USD
+
   // Transaction hooks
-  const { 
-    sendTransaction, 
-    data: hash, 
+  const {
+    sendTransaction,
+    data: hash,
     isPending: isSending,
     error: sendError,
-    reset: resetSend
+    reset: resetSend,
   } = useSendTransaction()
 
-  const { 
-    isLoading: isConfirming, 
+  const {
+    isLoading: isConfirming,
     isSuccess: isConfirmed,
-    error: confirmError
+    error: confirmError,
   } = useWaitForTransactionReceipt({
     hash,
   })
@@ -73,32 +86,33 @@ export const ICORounds: React.FC = () => {
     }
   }, [activeRound, selectedRoundNumber])
 
-  // Calculate tokens and ETH amount
+  const selectedRound = getRoundByNumber(selectedRoundNumber)
+  const currentMinimum = selectedRound
+    ? getMinimumAmount(selectedRound.round_number)
+    : PHASE2_MIN_USD
+
+  const tokensToReceive =
+    purchaseAmount && selectedRound
+      ? Math.floor(parseFloat(purchaseAmount) / selectedRound.price)
+      : 0
+
+  // Calculate ETH amount
   useEffect(() => {
     if (purchaseAmount && ethPrice) {
       const usdAmount = parseFloat(purchaseAmount)
+
+      // ✅ évite ethAmount = NaN
+      if (!Number.isFinite(usdAmount) || usdAmount <= 0) {
+        setEthAmount('')
+        return
+      }
+
       const ethRequired = calculateEthAmount(usdAmount)
       setEthAmount(ethRequired)
     } else {
       setEthAmount('')
     }
   }, [purchaseAmount, ethPrice, calculateEthAmount])
-
-  const selectedRound = getRoundByNumber(selectedRoundNumber)
-  const tokensToReceive = purchaseAmount && selectedRound ? Math.floor(parseFloat(purchaseAmount) / selectedRound.price) : 0
-
-  // Minimum investment amounts per round
-  const getMinimumAmount = (roundNumber: number): number => {
-    switch (roundNumber) {
-      case 1: return 200
-      case 2: return 150
-      case 3: return 100
-      case 4: return 10
-      default: return 10
-    }
-  }
-
-  const currentMinimum = selectedRound ? getMinimumAmount(selectedRound.round_number) : 10
 
   const handlePurchase = async () => {
     if (!isConnected || !address) {
@@ -108,7 +122,7 @@ export const ICORounds: React.FC = () => {
 
     // Check if ICO is finished
     if (icoStatus?.ico_finished) {
-      alert('L\'ICO est terminé. Aucun achat n\'est plus possible.')
+      alert("L'ICO est terminé. Aucun achat n'est plus possible.")
       return
     }
 
@@ -124,8 +138,10 @@ export const ICORounds: React.FC = () => {
     }
 
     const usdAmount = parseFloat(purchaseAmount)
-    if (usdAmount < currentMinimum) {
-      alert(`Montant minimum pour le Round ${selectedRound?.round_number}: $${currentMinimum}`)
+
+    // ✅ validation robuste + min = 20$
+    if (!Number.isFinite(usdAmount) || usdAmount < currentMinimum) {
+      alert(`Montant minimum : $${currentMinimum}`)
       return
     }
 
@@ -134,23 +150,24 @@ export const ICORounds: React.FC = () => {
       usdAmount,
       selectedRoundNumber,
       ethPrice,
-      ethAmount
+      ethAmount,
     })
+
     setIsProcessing(true)
     resetSend()
 
     try {
       const ethValue = parseEther(ethAmount)
-      
+
       // Adresse différente selon le réseau
       const recipientAddress = '0xEd6080e5652B522174FA5b0cC6C5EA44FacAFF02'
-      
+
       await sendTransaction({
         to: recipientAddress,
         value: ethValue,
       })
     } catch (error) {
-      console.error('Erreur lors de l\'envoi:', error)
+      console.error("Erreur lors de l'envoi:", error)
       setIsProcessing(false)
     }
   }
@@ -159,32 +176,27 @@ export const ICORounds: React.FC = () => {
   useEffect(() => {
     if (isConfirmed && hash && ethPrice && purchaseAmount) {
       const usdAmount = parseFloat(purchaseAmount)
-      
+
       // Vérifier que le montant est valide
-      if (isNaN(usdAmount) || usdAmount <= 0) {
+      if (!Number.isFinite(usdAmount) || usdAmount <= 0) {
         console.error('❌ [BALANCE DEBUG] Montant USD invalide lors de la confirmation:', usdAmount)
         setIsProcessing(false)
         return
       }
-      
+
       console.log('✅ [BALANCE DEBUG] Transaction confirmée par wagmi:', hash)
       console.log('💰 [BALANCE DEBUG] Données pour vérification:', {
         hash,
         usdAmount,
         selectedRoundNumber,
-        ethPrice
+        ethPrice,
       })
-      
+
       // Traitement immédiat de la transaction avec les bonnes valeurs
       console.log('🚀 [BALANCE DEBUG] Ajout à la file de vérification...')
-      addToVerificationQueue(
-        hash,
-        usdAmount,
-        selectedRoundNumber,
-        ethPrice
-      )
+      addToVerificationQueue(hash, usdAmount, selectedRoundNumber, ethPrice)
       console.log('✅ [BALANCE DEBUG] Ajouté à la file de vérification')
-      
+
       // Reset form après un délai pour éviter les problèmes de timing
       setTimeout(() => {
         console.log('🔄 [BALANCE DEBUG] Reset du formulaire...')
@@ -215,18 +227,25 @@ export const ICORounds: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'text-green-500'
-      case 'completed': return 'text-blue-500'
-      default: return 'text-gray-500'
+      case 'active':
+        return 'text-green-500'
+      case 'completed':
+        return 'text-blue-500'
+      default:
+        return 'text-gray-500'
     }
   }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active': return <Zap className="w-5 h-5 text-green-500 animate-pulse" />
-      case 'completed': return <CheckCircle className="w-5 h-5 text-blue-500" />
-      case 'upcoming': return <Clock className="w-5 h-5 text-gray-500" />
-      default: return <Clock className="w-5 h-5 text-gray-500" />
+      case 'active':
+        return <Zap className="w-5 h-5 text-green-500 animate-pulse" />
+      case 'completed':
+        return <CheckCircle className="w-5 h-5 text-blue-500" />
+      case 'upcoming':
+        return <Clock className="w-5 h-5 text-gray-500" />
+      default:
+        return <Clock className="w-5 h-5 text-gray-500" />
     }
   }
 
@@ -285,15 +304,17 @@ export const ICORounds: React.FC = () => {
 
           {/* ICO Rounds List */}
           <div className="space-y-6">
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">Available Rounds</h3>
-            
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">
+              Available Rounds
+            </h3>
+
             {rounds.map((round) => (
-              <div 
+              <div
                 key={round.id}
                 className={`bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 border-2 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl ${
-                  selectedRoundNumber === round.round_number 
-                    ? 'border-orange-500 bg-orange-50' 
-                    : round.status === 'active' 
+                  selectedRoundNumber === round.round_number
+                    ? 'border-orange-500 bg-orange-50'
+                    : round.status === 'active'
                       ? 'border-green-200 bg-green-50 hover:border-green-300'
                       : 'border-gray-200 hover:border-orange-300'
                 }`}
@@ -303,15 +324,21 @@ export const ICORounds: React.FC = () => {
                   <div className="flex items-center space-x-4 mb-4 sm:mb-0">
                     {getStatusIcon(round.status)}
                     <div>
-                      <h4 className="text-xl md:text-2xl font-bold text-gray-900">Round {round.round_number}</h4>
+                      <h4 className="text-xl md:text-2xl font-bold text-gray-900">
+                        Round {round.round_number}
+                      </h4>
                       <p className={`text-sm md:text-base font-medium ${getStatusColor(round.status)}`}>
-                        {round.status === 'active' ? 'Active' : 
-                         round.status === 'completed' ? 'Completed' : 
-                         round.status === 'upcoming' ? 'Upcoming' : round.status}
+                        {round.status === 'active'
+                          ? 'Active'
+                          : round.status === 'completed'
+                            ? 'Completed'
+                            : round.status === 'upcoming'
+                              ? 'Upcoming'
+                              : round.status}
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="text-right">
                     <div className="text-2xl md:text-3xl font-bold text-orange-500">${round.price}</div>
                     <div className="text-gray-600 text-sm md:text-base">per token</div>
@@ -340,10 +367,10 @@ export const ICORounds: React.FC = () => {
                     <span>{getProgressPercentage(round).toFixed(1)}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-3">
-                    <div 
+                    <div
                       className={`h-3 rounded-full transition-all duration-1000 ease-out ${
-                        round.status === 'active' 
-                          ? 'bg-gradient-to-r from-orange-500 to-blue-500' 
+                        round.status === 'active'
+                          ? 'bg-gradient-to-r from-orange-500 to-blue-500'
                           : 'bg-gray-400'
                       }`}
                       style={{ width: `${getProgressPercentage(round)}%` }}
@@ -373,19 +400,25 @@ export const ICORounds: React.FC = () => {
             {selectedRound && (
               <div className="bg-white rounded-xl md:rounded-2xl p-6 md:p-8 mb-6 md:mb-8 border border-gray-200 shadow-lg">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg md:text-xl font-semibold text-gray-900">Round {selectedRound.round_number}</h4>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    selectedRound.status === 'active' 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
+                  <h4 className="text-lg md:text-xl font-semibold text-gray-900">
+                    Round {selectedRound.round_number}
+                  </h4>
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      selectedRound.status === 'active'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
                     {selectedRound.status === 'active' ? 'Active' : 'Upcoming'}
                   </span>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div>
-                    <div className="text-2xl md:text-3xl font-bold text-orange-500">${selectedRound.price}</div>
+                    <div className="text-2xl md:text-3xl font-bold text-orange-500">
+                      ${selectedRound.price}
+                    </div>
                     <div className="text-gray-600 text-sm md:text-base">Price per token</div>
                   </div>
                   <div>
@@ -430,7 +463,12 @@ export const ICORounds: React.FC = () => {
                     title="Refresh price"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -448,23 +486,25 @@ export const ICORounds: React.FC = () => {
                 <label className="block text-gray-700 font-medium mb-3 text-sm md:text-base">
                   Purchase Amount (USD)
                 </label>
-               
-               {/* Quick Buy Buttons */}
-               <div className="mb-4">
-                 <div className="flex flex-wrap gap-2 mb-3">
-                   {[currentMinimum, currentMinimum * 2, currentMinimum * 5, currentMinimum * 10].filter((amount, index, arr) => arr.indexOf(amount) === index && amount <= 1000).map((amount) => (
-                     <button
-                       key={amount}
-                       type="button"
-                       onClick={() => setPurchaseAmount(amount.toString())}
-                       className="px-3 py-2 bg-orange-100 hover:bg-orange-200 text-orange-700 rounded-lg text-sm font-medium transition-colors border border-orange-200 hover:border-orange-300"
-                     >
-                       ${amount}
-                     </button>
-                   ))}
-                 </div>
-                 <p className="text-gray-500 text-xs">Quick select amounts</p>
-               </div>
+
+                {/* Quick Buy Buttons */}
+                <div className="mb-4">
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {[currentMinimum, currentMinimum * 2, currentMinimum * 5, currentMinimum * 10]
+                      .filter((amount, index, arr) => arr.indexOf(amount) === index && amount <= 1000)
+                      .map((amount) => (
+                        <button
+                          key={amount}
+                          type="button"
+                          onClick={() => setPurchaseAmount(amount.toString())}
+                          className="px-3 py-2 bg-orange-100 hover:bg-orange-200 text-orange-700 rounded-lg text-sm font-medium transition-colors border border-orange-200 hover:border-orange-300"
+                        >
+                          ${amount}
+                        </button>
+                      ))}
+                  </div>
+                  <p className="text-gray-500 text-xs">Quick select amounts</p>
+                </div>
 
                 <div className="relative">
                   <DollarSign className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -477,7 +517,9 @@ export const ICORounds: React.FC = () => {
                     className="w-full pl-12 pr-4 py-4 md:py-5 border border-gray-300 rounded-xl md:rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-lg md:text-xl font-semibold"
                   />
                 </div>
-                <p className="text-gray-500 text-xs md:text-sm mt-2">Minimum purchase: ${currentMinimum}</p>
+                <p className="text-gray-500 text-xs md:text-sm mt-2">
+                  Minimum purchase: ${currentMinimum}
+                </p>
               </div>
 
               {/* ETH Amount Display */}
@@ -499,9 +541,23 @@ export const ICORounds: React.FC = () => {
               {/* Purchase Button */}
               <button
                 onClick={handlePurchase}
-                disabled={!selectedRound || selectedRound.status !== 'active' || isProcessing || isSending || isConfirming || !purchaseAmount || icoStatus?.ico_finished}
+                disabled={
+                  !selectedRound ||
+                  selectedRound.status !== 'active' ||
+                  isProcessing ||
+                  isSending ||
+                  isConfirming ||
+                  !purchaseAmount ||
+                  icoStatus?.ico_finished
+                }
                 className={`w-full py-4 md:py-5 rounded-xl md:rounded-2xl font-semibold text-lg md:text-xl transition-all duration-200 flex items-center justify-center space-x-3 ${
-                  !selectedRound || selectedRound.status !== 'active' || isProcessing || isSending || isConfirming || !purchaseAmount || icoStatus?.ico_finished
+                  !selectedRound ||
+                  selectedRound.status !== 'active' ||
+                  isProcessing ||
+                  isSending ||
+                  isConfirming ||
+                  !purchaseAmount ||
+                  icoStatus?.ico_finished
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : 'bg-orange-500 hover:bg-orange-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
                 }`}
@@ -558,6 +614,7 @@ export const ICORounds: React.FC = () => {
                   )}
                 </div>
               )}
+
               {/* Transaction Status */}
               {(sendError || confirmError) && (
                 <div className="bg-red-50 border border-red-200 rounded-xl p-4 md:p-6">
@@ -582,7 +639,7 @@ export const ICORounds: React.FC = () => {
                       <p className="text-blue-600 text-sm mt-1">
                         Hash: {hash.slice(0, 10)}...{hash.slice(-8)}
                       </p>
-                      <a 
+                      <a
                         href={`https://sepolia.etherscan.io/tx/${hash}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -601,7 +658,9 @@ export const ICORounds: React.FC = () => {
               <div className="flex items-start space-x-3">
                 <Shield className="w-6 h-6 text-yellow-500 mt-1" />
                 <div>
-                  <h4 className="text-yellow-800 font-semibold text-sm md:text-base">Security Notice</h4>
+                  <h4 className="text-yellow-800 font-semibold text-sm md:text-base">
+                    Security Notice
+                  </h4>
                   <p className="text-yellow-700 text-xs md:text-sm mt-1">
                     Only send ETH to the official contract address. Verify all transactions before confirming.
                   </p>
